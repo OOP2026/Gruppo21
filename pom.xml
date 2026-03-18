@@ -60,7 +60,7 @@
     </dependencies>
 
     <build>
-        <finalName>GiocoBorsa</finalName>
+        <finalName>ProgettoOOP2026</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
