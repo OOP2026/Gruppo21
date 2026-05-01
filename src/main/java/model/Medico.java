@@ -12,8 +12,18 @@ public class Medico extends UtenteRegistrato {
     private List<Prestazione> prestazioni;
 
     public Medico(String login, String password, String matricola, String nome,
-                  String cognome, String specializzazione, Reparto reparto) throws NullPointerException {
+                  String cognome, String specializzazione, Reparto reparto) throws NullPointerException, IllegalArgumentException {
         super(login, password, nome, cognome);
+
+        if(matricola == null
+                || reparto == null
+                || specializzazione == null)
+            throw new NullPointerException("E' stato passato un attributo NULLO nella classe Medico.");
+
+        if(matricola.isEmpty()
+                || specializzazione.isEmpty())
+            throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe Medico.");
+
         this.matricola = matricola;
         this.specializzazione = specializzazione;
         this.reparto = reparto;

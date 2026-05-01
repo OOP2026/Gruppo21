@@ -19,13 +19,21 @@ public class Ricovero {
 
     public Ricovero(Paziente paziente, Medico medicoResponsabile,
                     LocalDateTime dataOraInizio, LocalDateTime dataOraFinePrevista,
-                    String statoRicovero, String note) {
+                    String statoRicovero, String note) throws NullPointerException, IllegalArgumentException {
 
         if(paziente == null
                 || medicoResponsabile == null
                 || dataOraInizio == null
                 || dataOraFinePrevista == null
-                || statoRicovero == null) throw new NullPointerException("E' stato passato un attributo nullo nella classe Ricovero.");
+                || statoRicovero == null)
+            throw new NullPointerException("E' stato passato un attributo nullo nella classe Ricovero.");
+
+        if(statoRicovero.isEmpty() ||
+                (!statoRicovero.equals("PROGRAMMATO")
+                && !statoRicovero.equals("ATTIVO")
+                && !statoRicovero.equals("DIMESSO")
+                && !statoRicovero.equals("ANNULLATO")))
+            throw new IllegalArgumentException("statoRicovero nella classe Ricovero non rispetta i valori enumerativi (Valore non consentito)");
 
         this.paziente = paziente;
         this.medicoResponsabile = medicoResponsabile;

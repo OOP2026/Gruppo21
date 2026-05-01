@@ -4,11 +4,14 @@ public class UtenteRegistrato extends Persona {
     private String login;
     private String password;
 
-    public UtenteRegistrato(String login, String password, String nome, String cognome) throws NullPointerException {
+    public UtenteRegistrato(String login, String password, String nome, String cognome) throws NullPointerException, IllegalArgumentException {
         super(nome, cognome);
 
         if(login == null || password == null)
-            throw new NullPointerException("E' stato passato un attributo nullo nella classe UtenteRegistrato.");
+            throw new NullPointerException("E' stato passato un attributo NULLO nella classe UtenteRegistrato.");
+
+        if(login.isEmpty() || password.isEmpty())
+            throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe UtenteRegistrato.");
 
         this.login = login;
         this.password = password;

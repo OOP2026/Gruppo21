@@ -10,8 +10,9 @@ public class Reparto {
     private List<Stanza> stanze;
     private List<Medico> medici;
 
-    public Reparto(String nome, String descrizione) throws NullPointerException {
-        if(nome == null) throw new NullPointerException("E' stato passato un attributo nullo nella classe Reparto");
+    public Reparto(String nome, String descrizione) throws NullPointerException, IllegalArgumentException {
+        if(nome == null) throw new NullPointerException("E' stato passato un attributo NULLO nella classe Reparto");
+        if(nome.isEmpty()) throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe Reparto");
 
         this.nome = nome;
         this.descrizione = descrizione;

@@ -13,14 +13,19 @@ public class Paziente extends Persona {
     private List<Ricovero> ricoveri;
 
     public Paziente(String codiceFiscale, String nome, String cognome,
-                    LocalDate dataNascita, String telefono, String indirizzo) throws NullPointerException {
+                    LocalDate dataNascita, String telefono, String indirizzo) throws NullPointerException, IllegalArgumentException {
         super(nome, cognome);
 
         if(codiceFiscale==null
                 || dataNascita == null
                 || telefono == null
                 || indirizzo == null)
-            throw new NullPointerException("E' stato passato un attributo nullo.");
+            throw new NullPointerException("E' stato passato un attributo NULLO nella classe Paziente.");
+
+        if(codiceFiscale.isEmpty()
+                || telefono.isEmpty()
+                || indirizzo.isEmpty())
+            throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe Paziente.");
 
         this.codiceFiscale = codiceFiscale;
         this.nome = nome;

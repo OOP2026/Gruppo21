@@ -11,6 +11,13 @@ public class AssegnazioneLetto {
 
     public AssegnazioneLetto(Ricovero ricovero, Letto letto,
                              LocalDateTime dataOraInizio, LocalDateTime dataOraFine) {
+
+        if(ricovero == null
+                || letto == null
+                || dataOraInizio == null
+                || dataOraFine == null)
+            throw new NullPointerException("E' stato passato un attributo NULLO nella classe AssegnazioneLetto.");
+
         this.ricovero = ricovero;
         this.letto = letto;
         this.dataOraInizio = dataOraInizio;
