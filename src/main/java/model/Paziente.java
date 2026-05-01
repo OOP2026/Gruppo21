@@ -4,11 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Paziente {
+public class Paziente extends Persona {
 
     private String codiceFiscale;
-    private String nome;
-    private String cognome;
     private LocalDate dataNascita;
     private String telefono;
     private String indirizzo;

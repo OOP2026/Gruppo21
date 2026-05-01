@@ -1,6 +1,6 @@
 package model;
 
-class Amministratore extends Utente {
+public class Amministratore extends UtenteRegistrato {
 
     public Amministratore(String login, String password) {
         super(login, password);

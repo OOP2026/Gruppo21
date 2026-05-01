@@ -1,12 +1,10 @@
 package model;
 
-import java.util.ArrayList;
-
-public class Utente {
+public class UtenteRegistrato extends Persona {
     private String login;
     private String password;
 
-    public Utente(String login, String password) {
+    public UtenteRegistrato(String login, String password) {
         this.login = login;
         this.password = password;
     }

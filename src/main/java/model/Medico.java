@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Medico extends Utente {
+public class Medico extends UtenteRegistrato {
 
     private String matricola;
     private String nome;
