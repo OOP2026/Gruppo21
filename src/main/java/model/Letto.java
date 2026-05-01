@@ -5,13 +5,13 @@ import java.util.List;
 
 public class Letto {
 
-    private String numeroLetto;
+    private String codiceLetto;
     private String statoStrutturale;
     private Stanza stanza;
     private List<AssegnazioneLetto> assegnazioni;
 
-    public Letto(String numeroLetto, String statoStrutturale, Stanza stanza) {
-        this.numeroLetto = numeroLetto;
+    public Letto(String codiceLetto, String statoStrutturale, Stanza stanza) {
+        this.codiceLetto = codiceLetto;
         this.statoStrutturale = statoStrutturale;
         this.stanza = stanza;
         this.assegnazioni = new ArrayList<>();
@@ -23,8 +23,8 @@ public class Letto {
         assegnazioni.add(assegnazione);
     }
 
-    public String getNumeroLetto() {
-        return numeroLetto;
+    public String getCodiceLetto() {
+        return codiceLetto;
     }
 
     public String getStatoStrutturale() {
@@ -33,6 +33,6 @@ public class Letto {
 
     @Override
     public String toString() {
-        return "Letto " + numeroLetto + " (" + statoStrutturale + ")";
+        return "Letto " + codiceLetto + " (" + statoStrutturale + ")";
     }
 }

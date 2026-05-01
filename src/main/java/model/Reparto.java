@@ -10,7 +10,9 @@ public class Reparto {
     private List<Stanza> stanze;
     private List<Medico> medici;
 
-    public Reparto(String nome, String descrizione) {
+    public Reparto(String nome, String descrizione) throws NullPointerException {
+        if(nome == null) throw new NullPointerException("E' stato passato un attributo nullo nella classe Reparto");
+
         this.nome = nome;
         this.descrizione = descrizione;
         this.stanze = new ArrayList<>();

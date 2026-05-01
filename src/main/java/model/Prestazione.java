@@ -15,7 +15,7 @@ public class Prestazione {
 
     public Prestazione(Ricovero ricovero, Medico medico, TipoPrestazione tipoPrestazione,
                        LocalDateTime dataOraInizio, LocalDateTime dataOraFine,
-                       String statoPrestazione, String esito, String descrizione) {
+                       String statoPrestazione, String esito, String descrizione) throws NullPointerException {
         this.ricovero = ricovero;
         this.medico = medico;
         this.tipoPrestazione = tipoPrestazione;

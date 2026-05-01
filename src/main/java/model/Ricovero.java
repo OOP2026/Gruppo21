@@ -20,6 +20,13 @@ public class Ricovero {
     public Ricovero(Paziente paziente, Medico medicoResponsabile,
                     LocalDateTime dataOraInizio, LocalDateTime dataOraFinePrevista,
                     String statoRicovero, String note) {
+
+        if(paziente == null
+                || medicoResponsabile == null
+                || dataOraInizio == null
+                || dataOraFinePrevista == null
+                || statoRicovero == null) throw new NullPointerException("E' stato passato un attributo nullo nella classe Ricovero.");
+
         this.paziente = paziente;
         this.medicoResponsabile = medicoResponsabile;
         this.dataOraInizio = dataOraInizio;

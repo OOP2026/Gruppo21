@@ -6,19 +6,15 @@ import java.util.List;
 public class Medico extends UtenteRegistrato {
 
     private String matricola;
-    private String nome;
-    private String cognome;
     private String specializzazione;
     private Reparto reparto;
     private List<Turno> turni;
     private List<Prestazione> prestazioni;
 
     public Medico(String login, String password, String matricola, String nome,
-                  String cognome, String specializzazione, Reparto reparto) {
-        super(login, password);
+                  String cognome, String specializzazione, Reparto reparto) throws NullPointerException {
+        super(login, password, nome, cognome);
         this.matricola = matricola;
-        this.nome = nome;
-        this.cognome = cognome;
         this.specializzazione = specializzazione;
         this.reparto = reparto;
         this.turni = new ArrayList<>();
