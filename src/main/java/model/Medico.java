@@ -11,8 +11,12 @@ public class Medico extends UtenteRegistrato {
     private List<Prestazione> prestazioni;
     private List<TurnoLavorativo> turniLavorativi;
 
-    public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) {
+    public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws NullPointerException, IllegalArgumentException {
         super(nome, cognome, email, password);
+
+        if(tipoMedico == null || reparto == null) throw new NullPointerException("La classe Medico ha degli attributi NULLI.");
+        if(tipoMedico.isEmpty()) throw new IllegalArgumentException("La classe Medico ha degli attributi VUOTI.");
+
         this.tipoMedico = tipoMedico;
         this.reparto = reparto;
         this.ricoveri = new ArrayList<>();
@@ -41,6 +45,8 @@ public class Medico extends UtenteRegistrato {
     public Reparto getReparto() {
         return reparto;
     }
+
+    public List<TurnoLavorativo> getTurniLavorativi() {return turniLavorativi;}
 
     @Override
     public String toString() {

@@ -35,28 +35,32 @@ public class MainTestOspedale {
                 LocalDateTime.of(2026, 5, 3, 10, 0)
         );
 
-        ricovero.aggiungiMedico(medico);
-
         Visita visita = new Visita("Visita cardiologica");
         medico.aggiungerePrestazione(visita);
 
         InterventoChirurgico intervento = new InterventoChirurgico("Angioplastica");
         medico.aggiungerePrestazione(intervento);
 
-        TurnoLavorativo turno = new TurnoLavorativo(
-                Giorno.LUNEDI,
-                LocalTime.of(8, 0),
-                Giorno.LUNEDI,
-                LocalTime.of(14, 0)
+        TurnoLavorativo turno1 = new TurnoLavorativo(
+                LocalDateTime.of(2026, 4, 27, 7, 0),
+                LocalDateTime.of(2026, 4, 27, 7, 59)
         );
 
-        turno.aggiungiMedico(medico);
+        TurnoLavorativo turno2 = new TurnoLavorativo(
+                LocalDateTime.of(2026, 4, 27, 8, 0),
+                LocalDateTime.of(2026, 4, 27, 8, 59)
+        );
+
+        turno1.aggiungiMedico(medico);
+        turno2.aggiungiMedico(medico);
+        ricovero.aggiungiMedico(medico);
 
         System.out.println(paziente);
         System.out.println(medico);
         System.out.println(ricovero);
         System.out.println(visita);
         System.out.println(intervento);
-        System.out.println(turno);
+        System.out.println(turno1);
+        System.out.println(turno2);
     }
 }

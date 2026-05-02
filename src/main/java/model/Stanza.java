@@ -8,7 +8,9 @@ public class Stanza {
     private Reparto reparto;
     private List<Letto> letti;
 
-    public Stanza(Reparto reparto) {
+    public Stanza(Reparto reparto) throws NullPointerException {
+        if(reparto == null) throw new NullPointerException("La classe Stanza ha degli attributi NULLI.");
+
         this.reparto = reparto;
         this.letti = new ArrayList<>();
 

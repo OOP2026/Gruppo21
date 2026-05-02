@@ -1,44 +1,54 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TurnoLavorativo {
 
-    private Giorno giornoInizio;
-    private LocalTime oraInizio;
-    private Giorno giornoFine;
-    private LocalTime oraFine;
+    private LocalDateTime dataOraInizio;
+    private LocalDateTime dataOraFine;
     private List<Medico> medici;
 
-    public TurnoLavorativo(Giorno giornoInizio, LocalTime oraInizio, Giorno giornoFine, LocalTime oraFine) {
-        this.giornoInizio = giornoInizio;
-        this.oraInizio = oraInizio;
-        this.giornoFine = giornoFine;
-        this.oraFine = oraFine;
+    public TurnoLavorativo(LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws NullPointerException {
+        if(dataOraInizio == null || dataOraFine == null) throw new NullPointerException("La classe TurnoLavorativo ha degli attributi NULLI.");
+
+        this.dataOraInizio = dataOraInizio;
+        this.dataOraFine = dataOraFine;
         this.medici = new ArrayList<>();
     }
 
-    public void aggiungiMedico(Medico medico) {
+    private boolean turnoCompresoInTurno(Medico medico) throws RuntimeException {
+        boolean controllo = false;
+
+        for(TurnoLavorativo turno : medico.getTurniLavorativi()) {
+            if(turno.getDataOraFine().isAfter(dataOraInizio)) {
+                controllo = true;
+                break;
+            }
+        }
+
+        return controllo;
+    }
+
+    public void aggiungiMedico(Medico medico) throws RuntimeException {
+        for(Medico dottore : medici) {
+            if(dottore.equals(medico)) throw new RuntimeException("Il medico è già stato aggiunto in quel turno");
+        }
+
+        if(turnoCompresoInTurno(medico)) throw new RuntimeException("Un turno del medico si sovrappone col turno che si vuole aggiungere");
+
         medici.add(medico);
         medico.aggiungiTurnoLavorativo(this);
     }
 
-    public Giorno getGiornoInizio() {
-        return giornoInizio;
+    public LocalDateTime getDataOraInizio() {
+        return dataOraInizio;
     }
 
-    public LocalTime getOraInizio() {
-        return oraInizio;
-    }
-
-    public Giorno getGiornoFine() {
-        return giornoFine;
-    }
-
-    public LocalTime getOraFine() {
-        return oraFine;
+    public LocalDateTime getDataOraFine() {
+        return dataOraFine;
     }
 
     public List<Medico> getMedici() {
@@ -47,6 +57,6 @@ public class TurnoLavorativo {
 
     @Override
     public String toString() {
-        return "Turno da " + giornoInizio + " " + oraInizio + " a " + giornoFine + " " + oraFine;
+        return String.valueOf("Turno da " + dataOraInizio.toString() + " a " + dataOraFine.toString());
     }
 }

@@ -12,7 +12,9 @@ public class Ricovero {
     private Letto letto;
     private List<Medico> medici;
 
-    public Ricovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) {
+    public Ricovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws NullPointerException {
+        if(paziente==null || letto == null || dataOraInizio == null || dataOraFine == null) throw new NullPointerException("La classe Ricovero ha degli attributi NULLI.");
+
         this.paziente = paziente;
         this.letto = letto;
         this.dataOraInizio = dataOraInizio;
@@ -27,7 +29,25 @@ public class Ricovero {
         return this;
     }
 
-    public void aggiungiMedico(Medico medico) {
+    private boolean turnoCompresoInRicovero(Medico medico) {
+        boolean controllo = false;
+
+        for(TurnoLavorativo turno : medico.getTurniLavorativi()) {
+            if(!turno.getDataOraFine().isBefore(dataOraInizio)) {
+                controllo = true;
+                break;
+            }
+        }
+
+        return controllo;
+    }
+
+    public void aggiungiMedico(Medico medico) throws RuntimeException {
+        for(Medico dottore : this.medici) {
+            if(dottore.equals(medico)) throw new RuntimeException("Il medico è gia stato aggiunto in questo ricovero");
+        }
+        if(!turnoCompresoInRicovero(medico)) throw new RuntimeException("Il medico sta venendo aggiunto in un ricovero fuori dai suoi turni");
+
         medici.add(medico);
         medico.aggiungiRicovero(this);
     }
