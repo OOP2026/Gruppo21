@@ -5,20 +5,10 @@ import java.util.List;
 
 public class Stanza {
 
-    private String numeroStanza;
-    private int piano;
     private Reparto reparto;
     private List<Letto> letti;
 
-    public Stanza(String numeroStanza, int piano, Reparto reparto) throws NullPointerException, IllegalArgumentException {
-        if(numeroStanza == null
-                || reparto == null)
-            throw new NullPointerException("E' stato passato un attributo NULLO nella classe Stanza.");
-
-        if(numeroStanza.isEmpty()) throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe Stanza.");
-
-        this.numeroStanza = numeroStanza;
-        this.piano = piano;
+    public Stanza(Reparto reparto) {
         this.reparto = reparto;
         this.letti = new ArrayList<>();
 
@@ -29,16 +19,11 @@ public class Stanza {
         letti.add(letto);
     }
 
-    public String getNumeroStanza() {
-        return numeroStanza;
+    public Reparto getReparto() {
+        return reparto;
     }
 
     public List<Letto> getLetti() {
         return letti;
-    }
-
-    @Override
-    public String toString() {
-        return "Stanza " + numeroStanza + ", piano " + piano;
     }
 }

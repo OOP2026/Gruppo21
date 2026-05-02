@@ -2,12 +2,25 @@ package model;
 
 public class Amministratore extends UtenteRegistrato {
 
-    public Amministratore(String login, String password, String nome, String cognome) {
-        super(login, password, nome, cognome);
+    public Amministratore(String nome, String cognome, String email, String password) {
+        super(nome, cognome, email, password);
     }
 
-    public void registraRicovero(Ricovero ricovero) {
-        System.out.println("Ricovero registrato: " + ricovero);
+    private void gestireAnagraficaPazienti() {
+        System.out.println("Gestione anagrafica pazienti");
+    }
+
+    private void rimuoviUtente() {
+        System.out.println("Utente rimosso");
+    }
+
+    private boolean aggiungereRicovero() {
+        System.out.println("Ricovero aggiunto");
+        return true;
+    }
+
+    public boolean aggiungereTurnoLavorativo() {
+        System.out.println("Turno lavorativo aggiunto");
+        return true;
     }
 }
-

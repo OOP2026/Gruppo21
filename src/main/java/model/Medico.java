@@ -5,48 +5,37 @@ import java.util.List;
 
 public class Medico extends UtenteRegistrato {
 
-    private String matricola;
-    private String specializzazione;
+    private String tipoMedico;
     private Reparto reparto;
-    private List<Turno> turni;
+    private List<Ricovero> ricoveri;
     private List<Prestazione> prestazioni;
+    private List<TurnoLavorativo> turniLavorativi;
 
-    public Medico(String login, String password, String matricola, String nome,
-                  String cognome, String specializzazione, Reparto reparto) throws NullPointerException, IllegalArgumentException {
-        super(login, password, nome, cognome);
-
-        if(matricola == null
-                || reparto == null
-                || specializzazione == null)
-            throw new NullPointerException("E' stato passato un attributo NULLO nella classe Medico.");
-
-        if(matricola.isEmpty()
-                || specializzazione.isEmpty())
-            throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe Medico.");
-
-        this.matricola = matricola;
-        this.specializzazione = specializzazione;
+    public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) {
+        super(nome, cognome, email, password);
+        this.tipoMedico = tipoMedico;
         this.reparto = reparto;
-        this.turni = new ArrayList<>();
+        this.ricoveri = new ArrayList<>();
         this.prestazioni = new ArrayList<>();
+        this.turniLavorativi = new ArrayList<>();
 
         reparto.aggiungiMedico(this);
     }
 
-    public void aggiungiTurno(Turno turno) {
-        turni.add(turno);
-    }
-
-    public void aggiungiPrestazione(Prestazione prestazione) {
+    public void aggiungerePrestazione(Prestazione prestazione) {
         prestazioni.add(prestazione);
     }
 
-    public String getNome() {
-        return nome;
+    public void aggiungiRicovero(Ricovero ricovero) {
+        ricoveri.add(ricovero);
     }
 
-    public String getCognome() {
-        return cognome;
+    public void aggiungiTurnoLavorativo(TurnoLavorativo turnoLavorativo) {
+        turniLavorativi.add(turnoLavorativo);
+    }
+
+    public String getTipoMedico() {
+        return tipoMedico;
     }
 
     public Reparto getReparto() {
@@ -55,6 +44,6 @@ public class Medico extends UtenteRegistrato {
 
     @Override
     public String toString() {
-        return "Dr. " + nome + " " + cognome + " - " + specializzazione;
+        return getNome() + " " + getCognome() + " - " + tipoMedico;
     }
 }

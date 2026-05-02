@@ -1,25 +1,25 @@
 package model;
 
 public class UtenteRegistrato extends Persona {
-    private String login;
+
+    private String email;
     private String password;
 
-    public UtenteRegistrato(String login, String password, String nome, String cognome) throws NullPointerException, IllegalArgumentException {
+    public UtenteRegistrato(String nome, String cognome, String email, String password) {
         super(nome, cognome);
-
-        if(login == null || password == null)
-            throw new NullPointerException("E' stato passato un attributo NULLO nella classe UtenteRegistrato.");
-
-        if(login.isEmpty() || password.isEmpty())
-            throw new IllegalArgumentException("E' stato passato un attributo VUOTO nella classe UtenteRegistrato.");
-
-        this.login = login;
+        this.email = email;
         this.password = password;
-        this.nome = nome;
-        this.cognome = cognome;
     }
 
-    public boolean login(String login, String password) {
-        return ( login.equals(this.login) && password.equals(this.password));
+    public boolean login(String email, String password) {
+        return this.email.equals(email) && this.password.equals(password);
+    }
+
+    private void logout() {
+        System.out.println("Logout effettuato");
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
