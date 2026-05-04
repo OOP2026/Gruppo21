@@ -12,7 +12,33 @@ public class Ricovero {
     private Letto letto;
     private List<Medico> medici;
 
-    public Ricovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws NullPointerException {
+    private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
+        boolean controllo = false;
+
+        for(Ricovero ricoveroInLetto: letto.getRicoveri()) {
+            if(ricoveroInLetto.dataOraFine.isAfter(dataOraInizio)) {
+                controllo = true;
+                break;
+            }
+        }
+
+        return controllo;
+    }
+
+    private boolean pazienteGiaOccupato(Paziente paziente, LocalDateTime dataOraInizio) {
+        boolean controllo = false;
+
+        for(Ricovero ricoveroInPaziente: paziente.getRicoveri()) {
+            if(ricoveroInPaziente.dataOraFine.isAfter(dataOraInizio)) {
+                controllo = true;
+                break;
+            }
+        }
+
+        return controllo;
+    }
+
+    public Ricovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws NullPointerException, RuntimeException {
         if(paziente==null || letto == null || dataOraInizio == null || dataOraFine == null) throw new NullPointerException("La classe Ricovero ha degli attributi NULLI.");
 
         this.paziente = paziente;
@@ -20,6 +46,9 @@ public class Ricovero {
         this.dataOraInizio = dataOraInizio;
         this.dataOraFine = dataOraFine;
         this.medici = new ArrayList<>();
+
+        if(lettoGiaOccupato(letto, dataOraInizio)) throw new RuntimeException("Il letto è già occupato in quel lasso di tempo.");
+        if(pazienteGiaOccupato(paziente, dataOraInizio)) throw new RuntimeException("Il paziente è già occupato in quel lasso di tempo.");
 
         paziente.aggiungiRicovero(this);
         letto.aggiungiRicovero(this);
