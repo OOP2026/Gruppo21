@@ -19,17 +19,10 @@ public class TurnoLavorativo {
         this.medici = new ArrayList<>();
     }
 
-    private boolean turnoCompresoInTurno(Medico medico) throws RuntimeException {
-        boolean controllo = false;
-
-        for(TurnoLavorativo turno : medico.getTurniLavorativi()) {
-            if(turno.getDataOraFine().isAfter(dataOraInizio)) {
-                controllo = true;
-                break;
-            }
-        }
-
-        return controllo;
+    private boolean turnoCompresoInTurno(Medico medico) {
+        for(TurnoLavorativo turno : medico.getTurniLavorativi())
+            if(turno.getDataOraFine().isAfter(dataOraInizio)) return true;
+        return false;
     }
 
     public void aggiungiMedico(Medico medico) throws RuntimeException {

@@ -13,29 +13,15 @@ public class Ricovero {
     private List<Medico> medici;
 
     private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
-        boolean controllo = false;
-
-        for(Ricovero ricoveroInLetto: letto.getRicoveri()) {
-            if(ricoveroInLetto.dataOraFine.isAfter(dataOraInizio)) {
-                controllo = true;
-                break;
-            }
-        }
-
-        return controllo;
+        for(Ricovero ricoveroInLetto: letto.getRicoveri())
+            if(ricoveroInLetto.dataOraFine.isAfter(dataOraInizio)) return true;
+        return false;
     }
 
     private boolean pazienteGiaOccupato(Paziente paziente, LocalDateTime dataOraInizio) {
-        boolean controllo = false;
-
-        for(Ricovero ricoveroInPaziente: paziente.getRicoveri()) {
-            if(ricoveroInPaziente.dataOraFine.isAfter(dataOraInizio)) {
-                controllo = true;
-                break;
-            }
-        }
-
-        return controllo;
+        for(Ricovero ricoveroInPaziente: paziente.getRicoveri())
+            if(ricoveroInPaziente.dataOraFine.isAfter(dataOraInizio)) return true;
+        return false;
     }
 
     public Ricovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws NullPointerException, RuntimeException {
@@ -61,14 +47,9 @@ public class Ricovero {
     private boolean turnoCompresoInRicovero(Medico medico) {
         boolean controllo = false;
 
-        for(TurnoLavorativo turno : medico.getTurniLavorativi()) {
-            if(!turno.getDataOraFine().isBefore(dataOraInizio)) {
-                controllo = true;
-                break;
-            }
-        }
-
-        return controllo;
+        for(TurnoLavorativo turno : medico.getTurniLavorativi())
+            if(!turno.getDataOraFine().isBefore(dataOraInizio)) return true;
+        return false;
     }
 
     public void aggiungiMedico(Medico medico) throws RuntimeException {
