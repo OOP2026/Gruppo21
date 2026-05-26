@@ -15,6 +15,16 @@ public class UtenteRegistrato extends Persona {
         this.password = password;
     }
 
+    public UtenteRegistrato(String email, String password) throws NullPointerException, IllegalArgumentException {
+        super();
+
+        if(email == null || password == null) throw new NullPointerException("La classe UtenteRegistrato ha degli attributi nulli.");
+        if(email.isEmpty() || password.isEmpty()) throw new IllegalArgumentException("La classe UtenteRegistrato ha degli attributi vuoti.");
+
+        this.email = email;
+        this.password = password;
+    }
+
     public boolean login(String email, String password) {
         return this.email.equals(email) && this.password.equals(password);
     }
@@ -25,5 +35,13 @@ public class UtenteRegistrato extends Persona {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

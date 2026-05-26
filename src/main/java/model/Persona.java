@@ -5,11 +5,18 @@ public class Persona {
     private String nome;
     private String cognome;
 
-    public Persona(String nome, String cognome) throws NullPointerException, IllegalArgumentException {
-        if(nome==null || cognome == null) throw new NullPointerException("La classe Persona ha degli attributi NULLI.");
-        if(nome.isEmpty() || cognome.isEmpty()) throw new IllegalArgumentException("La classe Persona ha degli attributi VUOTI.");
-
+    public Persona(String nome, String cognome) {
         this.nome = nome;
+        this.cognome = cognome;
+    }
+
+    public Persona() {}
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setCognome(String cognome) {
         this.cognome = cognome;
     }
 

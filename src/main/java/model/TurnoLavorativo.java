@@ -19,19 +19,7 @@ public class TurnoLavorativo {
         this.medici = new ArrayList<>();
     }
 
-    private boolean turnoCompresoInTurno(Medico medico) {
-        for(TurnoLavorativo turno : medico.getTurniLavorativi())
-            if(turno.getDataOraFine().isAfter(dataOraInizio)) return true;
-        return false;
-    }
-
     public void aggiungiMedico(Medico medico) throws RuntimeException {
-        for(Medico dottore : medici) {
-            if(dottore.equals(medico)) throw new RuntimeException("Il medico è già stato aggiunto in quel turno");
-        }
-
-        if(turnoCompresoInTurno(medico)) throw new RuntimeException("Un turno del medico si sovrappone col turno che si vuole aggiungere");
-
         medici.add(medico);
         medico.aggiungiTurnoLavorativo(this);
     }

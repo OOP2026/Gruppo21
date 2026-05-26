@@ -6,6 +6,10 @@ public class Amministratore extends UtenteRegistrato {
         super(nome, cognome, email, password);
     }
 
+    public Amministratore(String email, String password) {
+        super(email, password);
+    }
+
     private void gestireAnagraficaPazienti() {
         System.out.println("Gestione anagrafica pazienti");
     }
