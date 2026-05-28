@@ -27,6 +27,10 @@ public class Controller {
 		reparti.add(new Reparto());
 	}
 
+	public List<Reparto> getReparti() {
+		return reparti;
+	}
+
 	//Logica algoritmica
 
 	private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
