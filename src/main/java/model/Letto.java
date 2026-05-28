@@ -32,6 +32,8 @@ public class Letto {
         return stanza;
     }
 
+    public Stanza setStanza(Stanza stanza) {this.stanza = stanza;}
+
     public List<Ricovero> getRicoveri() {
         return ricoveri;
     }

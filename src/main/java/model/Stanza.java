@@ -25,6 +25,8 @@ public class Stanza {
         return reparto;
     }
 
+    public void setReparto(Reparto reparto) {this.reparto = reparto;}
+
     public List<Letto> getLetti() {
         return letti;
     }
