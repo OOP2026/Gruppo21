@@ -21,12 +21,13 @@ public class Controller {
 		amministratori = new ArrayList<>();
 		pazienti = new ArrayList<>();
 		turni = new ArrayList<>();
+		reparti = new ArrayList<>();
 
 		amministratori.add(new Amministratore(admin, admin));
 		reparti.add(new Reparto());
 	}
 
-	//Logica
+	//Logica algoritmica
 
 	private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
 		for(Ricovero ricoveroInLetto: letto.getRicoveri())
