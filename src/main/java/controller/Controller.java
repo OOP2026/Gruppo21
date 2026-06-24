@@ -48,6 +48,10 @@ public class Controller {
 		amministratori.add(new Amministratore(nome, cognome, email, password));
 	}
 
+	public void aggiungiAmministratoreAnonimo(String email, String password) {
+		amministratori.add(new Amministratore(email, password));
+	}
+
 	public void aggiungiStanza(Reparto reparto) {
 		new Stanza(reparto);
 	}
