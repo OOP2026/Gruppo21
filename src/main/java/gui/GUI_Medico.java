@@ -1,35 +1,28 @@
 package gui;
 
+import controller.Controller;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class GUI_Medico extends JFrame {
-    private JPanel panel;
-    private JButton gestisciRicoveroButton;
-    private JButton logoutButton;
+public class GUI_Medico {
+    // Deve chiamarsi "panel" per corrispondere esattamente al tuo Component Tree
+    public JPanel panel;
+
+    // Inseriamo i bottoni della tua grafica
     private JButton aggiungiRicoveroButton;
+    private JButton gestisciRicoveroButton; // Questo lo vedo già nominato così nella tua foto!
+    private JButton logoutButton;
 
-    public GUI_Medico() {
-        aggiungiRicoveroButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+    private Controller controller;
 
-            }
+    public GUI_Medico(Controller controller) {
+        this.controller = controller;
+
+        // Esempio: colleghiamo subito il logout
+        logoutButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, "Logout effettuato!");
+            // Più avanti potremo far chiudere la finestra e riaprire il Login
         });
-        gestisciRicoveroButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
-            }
-        });
-        logoutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
+        // Qui potremo aggiungere le azioni per gli altri due bottoni
     }
-
-
 }
