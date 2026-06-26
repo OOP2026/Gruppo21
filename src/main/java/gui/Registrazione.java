@@ -82,7 +82,7 @@ public class Registrazione {
                 email = textField1.getText();
                 if(!checkEmail()) {
                     textField1.setText("");
-                    //TODO apertura finestra modale.
+                    JOptionPane.showMessageDialog(frame, "Attenzione: l'email inserita non è valida.\nDeve contenere la chiocciola (@) e un punto (dominio).\nIl campo è stato svuotato.", "Errore Formato Email", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -111,9 +111,9 @@ public class Registrazione {
             public void focusLost(FocusEvent e) {
                 super.focusLost(e);
                 email = textField1.getText();
-                if(!checkEmail()) {
+                if(!email.isEmpty() && !checkEmail()) {
                     textField1.setText("");
-                    //TODO: Apertura finestra modale
+                    JOptionPane.showMessageDialog(frame, "Attenzione: l'email inserita non è valida.\nDeve contenere la chiocciola (@) e un punto (dominio).\nIl campo è stato svuotato.", "Errore Formato Email", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });

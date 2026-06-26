@@ -39,6 +39,6 @@ public class GUI_Home {
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
+        // TODO:
     }
 }

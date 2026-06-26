@@ -27,7 +27,7 @@ public class Controller {
 		reparti.add(new Reparto());
 	}
 
-	// --- NUOVI GETTER PER LA GRAFICA ---
+
 	public List<Reparto> getReparti() { return reparti; }
 	public List<Paziente> getPazienti() { return pazienti; }
 
@@ -43,7 +43,7 @@ public class Controller {
 		return tutti;
 	}
 
-	// --- NUOVI METODI DI INSERIMENTO ---
+
 	public void aggiungiAmministratore(String nome, String cognome, String email, String password) {
 		amministratori.add(new Amministratore(nome, cognome, email, password));
 	}
@@ -64,7 +64,7 @@ public class Controller {
 		turni.add(new TurnoLavorativo(inizio, fine));
 	}
 
-	// --- METODI ORIGINALI ALGORITMICI ---
+
 	private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
 		for(Ricovero ricoveroInLetto: letto.getRicoveri())
 			if(ricoveroInLetto.getDataOraFine().isAfter(dataOraInizio)) return true;
@@ -109,7 +109,7 @@ public class Controller {
 		turno.aggiungiMedico(medico);
 	}
 
-	// --- METODI ORIGINALI COSTRUTTORI ---
+
 	public void aggiungiPaziente(String nome, String cognome, String COD_FISCALE) {
 		pazienti.add(new Paziente(nome, cognome, COD_FISCALE));
 	}
