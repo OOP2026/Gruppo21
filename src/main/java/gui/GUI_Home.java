@@ -5,6 +5,7 @@ import javax.swing.*;
 
 public class GUI_Home {
     public JPanel panelMain;
+    protected JFrame frame;
     private JButton btnPazienti;
     private JButton btnMedici;
     private JButton btnStanze;
@@ -15,6 +16,11 @@ public class GUI_Home {
 
     public GUI_Home(Controller controller) {
         this.controller = controller;
+        frame = new JFrame("Amministratore: ");
+        frame.setContentPane(panelMain);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
 
         btnPazienti.addActionListener(e -> apriFinestra("Gestione Pazienti", new GUI_Paziente(controller).panelMain));
         btnMedici.addActionListener(e -> apriFinestra("Gestione Medici", new GUI_Medico(controller).panel));

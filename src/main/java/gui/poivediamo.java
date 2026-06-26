@@ -8,12 +8,12 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class InserimentoEntitaFrame extends JFrame {
+public class poivediamo extends JFrame {
 
     private Controller controller;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public InserimentoEntitaFrame(Controller controller) {
+    public poivediamo(Controller controller) {
         this.controller = controller;
 
         setTitle("Gestione Inserimenti Sistema");
