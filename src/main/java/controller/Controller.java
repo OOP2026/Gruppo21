@@ -47,12 +47,8 @@ public class Controller {
 	}
 
 
-	public void aggiungiAmministratore(String nome, String cognome, String email, String password) {
-		try {
-			amministratori.add(new Amministratore(nome, cognome, email, password));
-		} catch (BadArgsException e) {
-			//...
-		}
+	public void aggiungiAmministratore(String nome, String cognome, String email, String password) throws BadArgsException {
+		amministratori.add(new Amministratore(nome, cognome, email, password));
 	}
 
 	public void aggiungiAmministratoreAnonimo(String email, String password) throws BadArgsException {

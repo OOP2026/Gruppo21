@@ -1,6 +1,7 @@
 package gui;
 
 import controller.Controller;
+import exceptions.BadArgsException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -30,7 +31,11 @@ public class Registrazione {
         //Viene salvata come "[PASSWORD]", ove PASSWORD è cio' che inserisce l'utente.
 
         if (selezione) {
-            controller.aggiungiAmministratoreAnonimo(email, password);
+            try {
+                controller.aggiungiAmministratoreAnonimo(email, password);
+            } catch (BadArgsException e) {
+                //...
+            }
             chiamaGUIAmministratore(controller);
         }
         else {}//aggiungiMedico con altri reparti vari
