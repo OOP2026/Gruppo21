@@ -1,3 +1,4 @@
+import exceptions.BadArgsException;
 import model.*;
 
 import java.time.LocalDateTime;
@@ -5,7 +6,7 @@ import java.time.LocalTime;
 
 public class MainTestOspedale {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws BadArgsException {
 
         Reparto reparto = new Reparto();
 

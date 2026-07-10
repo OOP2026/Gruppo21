@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.BadArgsException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,19 +12,34 @@ public class Medico extends UtenteRegistrato {
     private List<Ricovero> ricoveri;
     private List<Prestazione> prestazioni;
     private List<TurnoLavorativo> turniLavorativi;
+    private Amministratore amministratoreDiRiferimento;
 
-    public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws NullPointerException, IllegalArgumentException {
-        super(nome, cognome, email, password);
-
-        if(tipoMedico == null || reparto == null) throw new NullPointerException("La classe Medico ha degli attributi NULLI.");
-        if(tipoMedico.isEmpty()) throw new IllegalArgumentException("La classe Medico ha degli attributi VUOTI.");
-
+    private void allocateAttribs(String tipoMedico, Reparto reparto) {
         this.tipoMedico = tipoMedico;
         this.reparto = reparto;
         this.ricoveri = new ArrayList<>();
         this.prestazioni = new ArrayList<>();
         this.turniLavorativi = new ArrayList<>();
+    }
 
+    public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws BadArgsException {
+        super(nome, cognome, email, password);
+
+        if(tipoMedico == null || reparto == null) throw new BadArgsException("La classe Medico ha degli attributi NULLI.");
+        if(tipoMedico.isEmpty()) throw new BadArgsException("La classe Medico ha degli attributi VUOTI.");
+
+        allocateAttribs(tipoMedico, reparto);
+        reparto.aggiungiMedico(this);
+    }
+
+    public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto, Amministratore amministratoreDiRiferimento) throws BadArgsException {
+        super(nome, cognome, email, password);
+
+        if(tipoMedico == null || reparto == null) throw new BadArgsException("La classe Medico ha degli attributi NULLI.");
+        if(tipoMedico.isEmpty()) throw new BadArgsException("La classe Medico ha degli attributi VUOTI.");
+
+        allocateAttribs(tipoMedico, reparto);
+        this.amministratoreDiRiferimento = amministratoreDiRiferimento;
         reparto.aggiungiMedico(this);
     }
 

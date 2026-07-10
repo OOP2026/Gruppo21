@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.BadArgsException;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -11,8 +13,8 @@ public class TurnoLavorativo {
     private LocalDateTime dataOraFine;
     private List<Medico> medici;
 
-    public TurnoLavorativo(LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws NullPointerException {
-        if(dataOraInizio == null || dataOraFine == null) throw new NullPointerException("La classe TurnoLavorativo ha degli attributi NULLI.");
+    public TurnoLavorativo(LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws BadArgsException {
+        if(dataOraInizio == null || dataOraFine == null) throw new BadArgsException("La classe TurnoLavorativo ha degli attributi NULLI.");
 
         this.dataOraInizio = dataOraInizio;
         this.dataOraFine = dataOraFine;

@@ -6,42 +6,30 @@ import java.sql.SQLException;
 
 public class ConnessioneDatabase {
 
-
-    private static final String URL = "jdbc:postgresql://localhost:5432/nome_del_tuo_db";
+    private static ConnessioneDatabase instance;
+    private static String URL = "jdbc:postgresql://localhost:5432/ospedale_db";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "la_tua_password";
+    private static final String PASSWORD = "Fr4ncy_Napoli";
+    private String driver = "org.postgresql.Driver";
 
 
-    private static Connection connessione = null;
+    private static Connection connection = null;
 
 
-    private ConnessioneDatabase() {}
-
-
-    public static Connection getConnessione() throws SQLException {
-        if (connessione == null || connessione.isClosed()) {
-            try {
-
-                Class.forName("org.postgresql.Driver");
-                connessione = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("Connessione al database stabilita con successo!");
-            } catch (ClassNotFoundException e) {
-                System.err.println("Errore: Driver PostgreSQL non trovato!");
-                throw new SQLException(e);
-            }
+    private ConnessioneDatabase() throws SQLException {
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Database Connection Creation Failed :" + ex.getMessage());
+            ex.printStackTrace();
         }
-        return connessione;
     }
 
 
-    public static void chiudiConnessione() {
-        if (connessione != null) {
-            try {
-                connessione.close();
-                System.out.println("Connessione al database chiusa.");
-            } catch (SQLException e) {
-                System.err.println("Errore durante la chiusura della connessione: " + e.getMessage());
-            }
-        }
+    public static ConnessioneDatabase getInstance() throws SQLException {
+        if(instance == null || connection.isClosed()) instance = new ConnessioneDatabase();
+
+        return instance;
     }
 }

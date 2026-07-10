@@ -1,12 +1,14 @@
 package model;
 
+import exceptions.BadArgsException;
+
 public class Amministratore extends UtenteRegistrato {
 
-    public Amministratore(String nome, String cognome, String email, String password) {
+    public Amministratore(String nome, String cognome, String email, String password) throws BadArgsException {
         super(nome, cognome, email, password);
     }
 
-    public Amministratore(String email, String password) {
+    public Amministratore(String email, String password) throws BadArgsException {
         super(email, password);
     }
 

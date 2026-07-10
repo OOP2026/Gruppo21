@@ -1,25 +1,35 @@
 package model;
 
-public class UtenteRegistrato extends Persona {
+import exceptions.BadArgsException;
 
+public class UtenteRegistrato {
+
+    private String nome;
+    private String cognome;
     private String email;
     private String password;
 
-    public UtenteRegistrato(String nome, String cognome, String email, String password) throws NullPointerException, IllegalArgumentException {
-        super(nome, cognome);
+    public UtenteRegistrato(String nome, String cognome, String email, String password) throws BadArgsException {
+        if(email == null || password == null) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi nulli.");
+        if(email.isEmpty() || password.isEmpty()) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi vuoti.");
 
-        if(email == null || password == null) throw new NullPointerException("La classe UtenteRegistrato ha degli attributi nulli.");
-        if(email.isEmpty() || password.isEmpty()) throw new IllegalArgumentException("La classe UtenteRegistrato ha degli attributi vuoti.");
-
+        this.nome = nome;
+        this.cognome = cognome;
         this.email = email;
         this.password = password;
     }
 
-    public UtenteRegistrato(String email, String password) throws NullPointerException, IllegalArgumentException {
-        super();
+    public String getNome() {
+        return nome;
+    }
 
-        if(email == null || password == null) throw new NullPointerException("La classe UtenteRegistrato ha degli attributi nulli.");
-        if(email.isEmpty() || password.isEmpty()) throw new IllegalArgumentException("La classe UtenteRegistrato ha degli attributi vuoti.");
+    public String getCognome() {
+        return cognome;
+    }
+
+    public UtenteRegistrato(String email, String password) throws BadArgsException {
+        if(email == null || password == null) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi nulli.");
+        if(email.isEmpty() || password.isEmpty()) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi vuoti.");
 
         this.email = email;
         this.password = password;

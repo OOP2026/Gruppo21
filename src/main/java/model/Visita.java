@@ -1,12 +1,14 @@
 package model;
 
-public class Visita extends Prestazione {
+import exceptions.BadArgsException;
+
+public class Visita {
 
     private String nomeVisita;
 
-    public Visita(String nomeVisita) throws NullPointerException, IllegalArgumentException {
-        if(nomeVisita==null) throw new NullPointerException("La classe Visita ha degli attributi NULLI.");
-        if(nomeVisita.isEmpty()) throw new IllegalArgumentException("La classe Visita ha degli attributi VUOTI.");
+    public Visita(String nomeVisita) throws BadArgsException {
+        if(nomeVisita==null) throw new BadArgsException("La classe Visita ha degli attributi NULLI.");
+        if(nomeVisita.isEmpty()) throw new BadArgsException("La classe Visita ha degli attributi VUOTI.");
 
         this.nomeVisita = nomeVisita;
     }

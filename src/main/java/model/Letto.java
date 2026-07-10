@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.BadArgsException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +11,9 @@ public class Letto {
     private Stanza stanza;
     private List<Ricovero> ricoveri;
 
-    public Letto(String codiceLetto, Stanza stanza) throws NullPointerException, IllegalArgumentException {
-        if(codiceLetto == null || stanza == null) throw new NullPointerException("La classe Letto ha degli attributi NULLI.");
-        if(codiceLetto.isEmpty()) throw new IllegalArgumentException("La classe Letto ha degli attributi VUOTI.");
+    public Letto(String codiceLetto, Stanza stanza) throws BadArgsException {
+        if(codiceLetto == null || stanza == null) throw new BadArgsException("La classe Letto ha degli attributi NULLI.");
+        if(codiceLetto.isEmpty()) throw new BadArgsException("La classe Letto ha degli attributi VUOTI.");
 
         this.codiceLetto = codiceLetto;
         this.stanza = stanza;

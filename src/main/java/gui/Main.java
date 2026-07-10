@@ -14,8 +14,6 @@ public class Main {
     private static Controller controller;
 
     public Main() {
-        loginButton.setVisible(false);
-
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -35,12 +33,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        frame = new JFrame("Benvenuto - OBBLIGATORIA REGISTRAZIONE DI AMMINISTRATORE");
-
-        //Inserire qui le query al database perché sennò l'app non sà dove andare a parare
-        //Per ora verrà forzata la registrazione di un amministratore
-
-
+        frame = new JFrame("Benvenuto");
 
         frame.setContentPane(new Main().panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
