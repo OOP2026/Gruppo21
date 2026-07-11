@@ -17,11 +17,16 @@ public class AmministratoreImplementazioneDAO implements DAO {
 
     @Override
     public Boolean verificaCredenziali(String email, String password) throws SQLException {
-        String SQL = "SELECT * FROM amministratore WHERE email = ? AND password = ?";
-        PreparedStatement ps = connection.prepareStatement(SQL);
-        ps.setString(1, email);
-        ps.setString(2, password);
-        ResultSet rs = ps.executeQuery();
-        return rs.next();
+        // SELECT 1 è più efficiente quando devi solo verificare l'esistenza
+        String sql = "SELECT 1 FROM amministratore WHERE email = ? AND password = ?";
+
+        // try-with-resources garantisce la chiusura automatica di ps e rs
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 }
