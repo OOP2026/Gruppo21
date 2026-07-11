@@ -20,7 +20,6 @@ public class Controller {
 	private List<TurnoLavorativo> turni;
 	private DAO Dao;
 
-	// Gestione sessione e permessi
 	private String utenteLoggatoRuolo = null;
 	private String emailUtenteLoggato = null;
 
@@ -32,8 +31,6 @@ public class Controller {
 		turni = new ArrayList<>();
 		reparti = new ArrayList<>();
 	}
-
-	// --- LOGICA LOGIN E PERMESSI ---
 
 	public boolean loginAmministratore(String email, String password) throws SQLException {
 		Dao = new AmministratoreImplementazioneDAO();
@@ -51,6 +48,10 @@ public class Controller {
 		this.utenteLoggatoRuolo = "Medico";
 		this.emailUtenteLoggato = email;
 		return true;
+	}
+
+	public void istanziaDB() throws SQLException {
+
 	}
 
 	public boolean isAmministratore() {

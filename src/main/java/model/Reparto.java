@@ -1,15 +1,25 @@
 package model;
 
+import exceptions.BadArgsException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Reparto {
     private List<Stanza> stanze;
     private List<Medico> medici;
+    private String nome;
+    private int id;
 
-    public Reparto() {
+    public Reparto(String nome, int id) throws BadArgsException {
+        if(nome == null) throw new BadArgsException("La classe Reparto ha degli attributi nulli.");
+        if(nome.isEmpty()) throw new BadArgsException("La classe Reparto ha degli attributi vuoti.");
+
         this.stanze = new ArrayList<>();
         this.medici = new ArrayList<>();
+
+        this.nome = nome;
+        this.id = id;
     }
 
     public void aggiungiStanza(Stanza stanza) {
@@ -23,5 +33,9 @@ public class Reparto {
     }
     public List<Medico> getMedici() {
         return medici;
+    }
+
+    public int getId() {
+        return id;
     }
 }
