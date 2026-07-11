@@ -58,26 +58,33 @@ public class Controller {
 	}
 
 	public void istanziaDB() throws SQLException {
+		Dao = new AmministratoreImplementazioneDAO();
+		Dao.istanziaDB();
+
+		Dao = new MedicoImplementazioneDAO();
 		Dao.istanziaDB();
 	}
 
 	private void scaricaTabelleInMemoria() throws SQLException {
-		// Usiamo l'AmministratoreDAO che ha i permessi per leggere le liste principali
-		AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
+		// Usiamo l'AmministratoreDAO perché all'avvio vogliamo caricare la base dati globale
+		Dao = new AmministratoreImplementazioneDAO();
 
-		// Sostituiamo le liste vuote con i dati estratti dal DB
-		// this.pazienti = adminDao.getTuttiIPazienti();
-		// this.medici = adminDao.getTuttiIMedici();
-		// this.reparti = adminDao.getTuttiIReparti();
+		// Passiamo 0 (o qualsiasi intero) poiché l'AmministratoreDAO ignora il parametro e fa "SELECT *"
+		this.reparti = Dao.getReparti(0);
+		this.pazienti = Dao.getPazienti(0);
+		this.medici = Dao.getMedici(0);
+		this.turni = Dao.getTurniLavorativi(0);
+		this.amministratori = Dao.getAmministratori(0);
 
-		System.out.println("Tabelle scaricate in memoria con successo.");
+		// Le liste come Ricoveri, Stanze e Letti verranno gestite/assemblate
+		// a cascata o in futuri aggiornamenti del DAO se necessario.
+
+		System.out.println("Dati scaricati in memoria con successo dal database.");
 	}
 
 	public boolean isAmministratore() {
 		return "Amministratore".equals(utenteLoggatoRuolo);
 	}
-
-	// --- METODI DI LOGICA ESISTENTI ---
 
 	public List<Reparto> getReparti() { return reparti; }
 	public List<Paziente> getPazienti() { return pazienti; }
