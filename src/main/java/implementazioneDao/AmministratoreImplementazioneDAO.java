@@ -42,15 +42,37 @@ public class AmministratoreImplementazioneDAO implements DAO {
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    lista.add(new Medico(rs.getString("nome"), rs.getString("cognome"),
+                    Medico m = new Medico(rs.getString("nome"), rs.getString("cognome"),
                             rs.getString("email"), rs.getString("password"),
-                            rs.getString("tipo_medico"), null));
+                            rs.getString("tipo_medico"), null);
+                    m.setIdMedico(rs.getInt("id_medico"));
+                    lista.add(m);
                 } catch (BadArgsException e) {
                     System.err.println("Errore caricamento Medico: " + e.getMessage());
                 }
             }
         }
         return lista;
+    }
+
+    @Override
+    public List<Amministratore> getAmministratori(int id) throws SQLException {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Letto> getLetti(int id) throws SQLException {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Stanza> getStanze(int id) throws SQLException {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Stanza> getStanzePerReparto(int id, Reparto reparto) throws SQLException {
+        return new ArrayList<>();
     }
 
     @Override
@@ -71,22 +93,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
     }
 
     @Override
-    public List<Reparto> getReparti(int id) throws SQLException {
-        List<Reparto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Reparto";
-        try (PreparedStatement ps = connection.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                // Reparto non lancia BadArgsException, quindi non serve try-catch qui
-                lista.add(new Reparto(rs.getString("nome_reparto"), rs.getInt("id_reparto")));
-            }
-        } catch (BadArgsException e) {
-            throw new RuntimeException(e);
-        }
-        return lista;
-    }
-
-    @Override
     public List<TurnoLavorativo> getTurniLavorativi(int id) throws SQLException {
         List<TurnoLavorativo> lista = new ArrayList<>();
         String sql = "SELECT * FROM Turno_Lavorativo";
@@ -94,7 +100,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    lista.add(new TurnoLavorativo(rs.getObject("data_ora_inizio", LocalDateTime.class), rs.getObject("data_ora_fine", LocalDateTime.class)));
+                    lista.add(new TurnoLavorativo(rs.getObject("data_ora_inizio", LocalDateTime.class),
+                            rs.getObject("data_ora_fine", LocalDateTime.class)));
                 } catch (BadArgsException e) {
                     System.err.println("Errore caricamento Turno: " + e.getMessage());
                 }
@@ -103,10 +110,21 @@ public class AmministratoreImplementazioneDAO implements DAO {
         return lista;
     }
 
-    // Metodi vuoti richiesti dall'interfaccia
-    @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
-    @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
-    @Override public List<Stanza> getStanze(int id) { return new ArrayList<>(); }
-    @Override public List<Stanza> getStanzePerReparto(int id, Reparto reparto) { return new ArrayList<>(); }
-    @Override public List<Visita> getVisite(int id) { return new ArrayList<>(); }
+    @Override
+    public List<Reparto> getReparti(int id) throws SQLException {
+        List<Reparto> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Reparto";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.add(new Reparto(rs.getString("nome_reparto"), rs.getInt("id_reparto")));
+            }
+        }
+        return lista;
+    }
+
+    @Override
+    public List<Visita> getVisite(int id) throws SQLException {
+        return new ArrayList<>();
+    }
 }
