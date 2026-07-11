@@ -1,6 +1,7 @@
 package gui;
 
 import controller.Controller;
+import exceptions.BadArgsException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -39,6 +40,11 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        controller = new Controller();
+        try {
+            controller = new Controller();
+        } catch (BadArgsException e) {
+            System.err.println("Errore di Controller - Inizializzazione fallita.");
+            System.exit(1);
+        }
     }
 }

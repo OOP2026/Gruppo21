@@ -1,10 +1,14 @@
 package controller;
 
+import dao.DAO;
 import exceptions.BadArgsException;
 import exceptions.LogicaEccezione;
 import exceptions.MemoryException;
+import implementazioneDao.AmministratoreImplementazioneDAO;
+import implementazioneDao.MedicoImplementazioneDAO;
 import model.*;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +20,34 @@ public class Controller {
 	private List<Paziente> pazienti;
 	private List<Reparto> reparti;
 	private List<TurnoLavorativo> turni;
+	private DAO Dao;
 
 	public Controller() throws BadArgsException {
-		String admin = "admin";
 		medici = new ArrayList<>();
 		ricoveri = new ArrayList<>();
 		amministratori = new ArrayList<>();
 		pazienti = new ArrayList<>();
 		turni = new ArrayList<>();
 		reparti = new ArrayList<>();
-
-		amministratori.add(new Amministratore(admin, admin));
-		reparti.add(new Reparto());
 	}
 
+	public boolean loginAmministratore(String email, String password) throws SQLException {
+		Dao = new AmministratoreImplementazioneDAO();
+		if(!Dao.verificaCredenziali(email, password)) return false;
+
+		//TODO: Query Inizializzazione del DB locale
+		return true;
+	}
+
+	public boolean loginMedico(String email, String password) throws SQLException {
+		Dao = new MedicoImplementazioneDAO();
+		if(!Dao.verificaCredenziali(email, password)) return false;
+
+		//TODO: Query Inizializzazione del DB locale
+		return true;
+	}
+
+	//GETTER E SETTER
 
 	public List<Reparto> getReparti() { return reparti; }
 	public List<Paziente> getPazienti() { return pazienti; }

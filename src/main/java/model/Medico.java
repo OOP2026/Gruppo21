@@ -10,7 +10,6 @@ public class Medico extends UtenteRegistrato {
     private String tipoMedico;
     private Reparto reparto;
     private List<Ricovero> ricoveri;
-    private List<Prestazione> prestazioni;
     private List<TurnoLavorativo> turniLavorativi;
     private Amministratore amministratoreDiRiferimento;
 
@@ -18,7 +17,6 @@ public class Medico extends UtenteRegistrato {
         this.tipoMedico = tipoMedico;
         this.reparto = reparto;
         this.ricoveri = new ArrayList<>();
-        this.prestazioni = new ArrayList<>();
         this.turniLavorativi = new ArrayList<>();
     }
 
@@ -41,10 +39,6 @@ public class Medico extends UtenteRegistrato {
         allocateAttribs(tipoMedico, reparto);
         this.amministratoreDiRiferimento = amministratoreDiRiferimento;
         reparto.aggiungiMedico(this);
-    }
-
-    public void aggiungerePrestazione(Prestazione prestazione) {
-        prestazioni.add(prestazione);
     }
 
     public void aggiungiRicovero(Ricovero ricovero) {

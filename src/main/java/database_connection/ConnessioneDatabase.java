@@ -15,6 +15,9 @@ public class ConnessioneDatabase {
 
     private static Connection connection = null;
 
+    public static Connection getConnection() {
+        return connection;
+    }
 
     private ConnessioneDatabase() throws SQLException {
         try {
