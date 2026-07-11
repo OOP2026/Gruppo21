@@ -18,7 +18,7 @@ public class MedicoImplementazioneDAO implements DAO {
     }
 
     @Override
-    public void istanziaDB(int id) throws SQLException {
+    public void istanziaMemoriaLocale(int id) throws SQLException {
         System.out.println("Medico: connessione stabilita, pronto per scaricare dati filtrati.");
     }
 

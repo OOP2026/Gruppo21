@@ -18,7 +18,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
     }
 
     @Override
-    public void istanziaDB(int id) throws SQLException {
+    public void istanziaMemoriaLocale(int id) throws SQLException {
         System.out.println("Amministratore: inizializzazione dati globali completata.");
     }
 
@@ -111,7 +111,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
     }
 
     @Override
-    public List<Reparto> getReparti(int id) throws SQLException {
+    public List<Reparto> getReparti(int id) throws SQLException, BadArgsException {
         List<Reparto> lista = new ArrayList<>();
         String sql = "SELECT * FROM Reparto";
         try (PreparedStatement ps = connection.prepareStatement(sql);

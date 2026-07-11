@@ -32,7 +32,6 @@ public class Controller {
 		reparti = new ArrayList<>();
 
 		try {
-			istanziaDB();
 			scaricaTabelleInMemoria();
 		} catch (SQLException e) {
 			System.err.println("Errore di connessione iniziale: " + e.getMessage());
@@ -55,10 +54,6 @@ public class Controller {
 		this.utenteLoggatoRuolo = "Medico";
 		this.emailUtenteLoggato = email;
 		return true;
-	}
-
-	public void istanziaDB() throws SQLException {
-		Dao.istanziaDB();
 	}
 
 	private void scaricaTabelleInMemoria() throws SQLException {
