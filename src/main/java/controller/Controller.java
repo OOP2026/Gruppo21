@@ -2,8 +2,6 @@ package controller;
 
 import dao.DAO;
 import exceptions.BadArgsException;
-import exceptions.LogicaEccezione;
-import exceptions.MemoryException;
 import implementazioneDao.AmministratoreImplementazioneDAO;
 import implementazioneDao.MedicoImplementazioneDAO;
 import model.*;
@@ -22,6 +20,10 @@ public class Controller {
 	private List<TurnoLavorativo> turni;
 	private DAO Dao;
 
+	// Gestione sessione e permessi
+	private String utenteLoggatoRuolo = null;
+	private String emailUtenteLoggato = null;
+
 	public Controller() throws BadArgsException {
 		medici = new ArrayList<>();
 		ricoveri = new ArrayList<>();
@@ -31,11 +33,14 @@ public class Controller {
 		reparti = new ArrayList<>();
 	}
 
+	// --- LOGICA LOGIN E PERMESSI ---
+
 	public boolean loginAmministratore(String email, String password) throws SQLException {
 		Dao = new AmministratoreImplementazioneDAO();
 		if(!Dao.verificaCredenziali(email, password)) return false;
 
-		//TODO: Query Inizializzazione del DB locale
+		this.utenteLoggatoRuolo = "Amministratore";
+		this.emailUtenteLoggato = email;
 		return true;
 	}
 
@@ -43,11 +48,16 @@ public class Controller {
 		Dao = new MedicoImplementazioneDAO();
 		if(!Dao.verificaCredenziali(email, password)) return false;
 
-		//TODO: Query Inizializzazione del DB locale
+		this.utenteLoggatoRuolo = "Medico";
+		this.emailUtenteLoggato = email;
 		return true;
 	}
 
-	//GETTER E SETTER
+	public boolean isAmministratore() {
+		return "Amministratore".equals(utenteLoggatoRuolo);
+	}
+
+	// --- METODI DI LOGICA ESISTENTI ---
 
 	public List<Reparto> getReparti() { return reparti; }
 	public List<Paziente> getPazienti() { return pazienti; }
@@ -64,27 +74,25 @@ public class Controller {
 		return tutti;
 	}
 
-
 	public void aggiungiAmministratore(String nome, String cognome, String email, String password) throws BadArgsException {
 		amministratori.add(new Amministratore(nome, cognome, email, password));
 	}
 
 	public void aggiungiAmministratoreAnonimo(String email, String password) throws BadArgsException {
 		amministratori.add(new Amministratore(email, password));
-    }
+	}
 
 	public void aggiungiStanza(Reparto reparto) throws BadArgsException {
 		new Stanza(reparto);
-    }
+	}
 
 	public void aggiungiLetto(String codice, Stanza stanza) throws BadArgsException {
 		new Letto(codice, stanza);
-    }
+	}
 
 	public void aggiungiTurnoLavorativo(LocalDateTime inizio, LocalDateTime fine) throws BadArgsException {
 		turni.add(new TurnoLavorativo(inizio, fine));
-    }
-
+	}
 
 	private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
 		for(Ricovero ricoveroInLetto: letto.getRicoveri())
@@ -110,40 +118,39 @@ public class Controller {
 		return false;
 	}
 
-	public void aggiungiMedicoARicovero(Medico medico, Ricovero ricovero) throws LogicaEccezione, MemoryException {
-		if(!medici.contains(medico)) throw new LogicaEccezione("Medico non è presente in memoria.");
-		if(!ricoveri.contains(ricovero)) throw new LogicaEccezione("Ricovero non è presente in memoria.");
+	public void aggiungiMedicoARicovero(Medico medico, Ricovero ricovero) throws Exception {
+		if(!medici.contains(medico)) throw new Exception("Medico non presente.");
+		if(!ricoveri.contains(ricovero)) throw new Exception("Ricovero non presente.");
 		for(Medico dottore : ricovero.getMedici()) {
-			if(dottore.equals(medico)) throw new MemoryException("Il medico è gia stato aggiunto in questo ricovero");
+			if(dottore.equals(medico)) throw new Exception("Medico già aggiunto.");
 		}
-		if(!turnoCompresoInRicovero(medico, ricovero)) throw new LogicaEccezione("Ricovero fuori dai turni.");
+		if(!turnoCompresoInRicovero(medico, ricovero)) throw new Exception("Fuori turno.");
 		ricovero.aggiungiMedico(medico);
 	}
 
-	public void aggiungiMedicoAlTurno(Medico medico, TurnoLavorativo turno) throws LogicaEccezione, MemoryException {
-		if(!medici.contains(medico)) throw new MemoryException("Medico non è presente in memoria.");
-		if(!turni.contains(turno)) throw new MemoryException("Turno non è presente in memoria.");
+	public void aggiungiMedicoAlTurno(Medico medico, TurnoLavorativo turno) throws Exception {
+		if(!medici.contains(medico)) throw new Exception("Medico non presente.");
+		if(!turni.contains(turno)) throw new Exception("Turno non presente.");
 		for(Medico dottore : turno.getMedici()) {
-			if(dottore.equals(medico)) throw new LogicaEccezione("Il medico è già stato aggiunto in quel turno");
+			if(dottore.equals(medico)) throw new Exception("Medico già aggiunto.");
 		}
-		if(turnoCompresoInTurno(medico, turno)) throw new LogicaEccezione("Sovrapposizione turno");
+		if(turnoCompresoInTurno(medico, turno)) throw new Exception("Sovrapposizione turno.");
 		turno.aggiungiMedico(medico);
 	}
-
 
 	public void aggiungiPaziente(String nome, String cognome, String COD_FISCALE) throws BadArgsException {
 		pazienti.add(new Paziente(nome, cognome, COD_FISCALE));
 	}
 
-	public void aggiungiMedico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws MemoryException, BadArgsException {
-		if(!reparti.contains(reparto)) throw new MemoryException("Il reparto non esiste in memoria.");
+	public void aggiungiMedico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws Exception {
+		if(!reparti.contains(reparto)) throw new Exception("Reparto non esistente.");
 		medici.add(new Medico(nome, cognome, email, password, tipoMedico, reparto));
 	}
 
-	public void aggiungiRicovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws LogicaEccezione, MemoryException, BadArgsException {
-		if(!pazienti.contains(paziente)) throw new MemoryException("Il paziente non esiste in memoria.");
-		if(pazienteGiaOccupato(paziente, dataOraInizio)) throw new LogicaEccezione("Il paziente è già occupato");
-		if(lettoGiaOccupato(letto, dataOraInizio)) throw new LogicaEccezione("Il letto è già occupato");
+	public void aggiungiRicovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws Exception {
+		if(!pazienti.contains(paziente)) throw new Exception("Paziente inesistente.");
+		if(pazienteGiaOccupato(paziente, dataOraInizio)) throw new Exception("Paziente occupato.");
+		if(lettoGiaOccupato(letto, dataOraInizio)) throw new Exception("Letto occupato.");
 		ricoveri.add(new Ricovero(paziente, letto, dataOraInizio, dataOraFine));
 	}
 }

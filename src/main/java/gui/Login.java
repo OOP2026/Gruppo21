@@ -1,10 +1,10 @@
 package gui;
 
 import controller.Controller;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class Login {
@@ -16,8 +16,7 @@ public class Login {
     private JButton ritornaButton;
     private JButton confermaButton;
     private Controller controller;
-    private boolean selezione = false; //false per medico, true per ammnistratore
-
+    private boolean selezione = false;
 
     public Login(JFrame main, Controller controller) {
         this.controller = controller;
@@ -27,37 +26,36 @@ public class Login {
         frame.pack();
         frame.setVisible(true);
 
-        passwordField1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        comboBox1.addActionListener(e -> {
+            String value = Objects.requireNonNull(comboBox1.getSelectedItem()).toString();
+            selezione = value.equals("Amministratore");
+        });
 
-            }
+        ritornaButton.addActionListener(e -> {
+            main.setVisible(true);
+            frame.dispose();
         });
-        textField1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-        comboBox1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String value = Objects.requireNonNull(comboBox1.getSelectedItem()).toString();
-                selezione = value.equals("Amministratore");
-                System.out.println("Selezionato: " + value);
-            }
-        });
-        ritornaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                main.setVisible(true);
-                frame.setVisible(false);
-                frame.dispose();
-            }
-        });
+
         confermaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String email = textField1.getText();
+                String password = new String(passwordField1.getPassword());
 
+                try {
+                    boolean accessoRiuscito = selezione ?
+                            controller.loginAmministratore(email, password) :
+                            controller.loginMedico(email, password);
+
+                    if (accessoRiuscito) {
+                        JOptionPane.showMessageDialog(frame, "Accesso eseguito con successo!");
+                        frame.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Credenziali errate.", "Errore", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(frame, "Errore Database: " + ex.getMessage());
+                }
             }
         });
     }
