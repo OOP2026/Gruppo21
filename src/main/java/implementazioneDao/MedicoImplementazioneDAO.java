@@ -33,22 +33,23 @@ public class MedicoImplementazioneDAO implements DAO {
         }
     }
 
+    // ORA IL METODO IMPLEMENTA CORRETTAMENTE L'INTERFACCIA
     @Override
-    public void istanziaDB() throws SQLException {
-        
+    public void istanziaDB(int idMedico) throws SQLException {
+        // Qui non creiamo tabelle.
+        // Il controller userà questo metodo per "inizializzare" le viste del medico
+        System.out.println("Modulo Medico pronto per l'ID: " + idMedico);
     }
 
     @Override
     public List<Medico> getMedici(int ID_Medico) throws SQLException {
         List<Medico> listaMedici = new ArrayList<>();
-        // Un medico vede solo il proprio account
         String sql = "SELECT * FROM Medico WHERE id_medico = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, ID_Medico);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Costruiamo il Medico. Il reparto verrà popolato dal Controller
                     listaMedici.add(new Medico(
                             rs.getString("nome"), rs.getString("cognome"),
                             rs.getString("email"), rs.getString("password"),
@@ -65,24 +66,15 @@ public class MedicoImplementazioneDAO implements DAO {
     @Override
     public List<Visita> getVisite(int ID_Medico) throws SQLException {
         List<Visita> visite = new ArrayList<>();
-        // Il medico vede SOLO le proprie visite
         String sql = "SELECT * FROM Visita WHERE id_medico = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, ID_Medico);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String nome = rs.getString("nome_visita");
-
-                    // 1. Estraiamo le FK dal database
-                    int idRicoveroFk = rs.getInt("id_ricovero");
-
-                    // 2. Usiamo i Costruttori Guscio per istanziare gli oggetti referenziati
-                    Ricovero ricovero = new Ricovero(idRicoveroFk);
-                    Medico medico = new Medico(ID_Medico);
-
-                    // 3. Creiamo la Visita con le sue dipendenze reali
-                    visite.add(new Visita(nome, ricovero, medico));
+                    visite.add(new Visita(rs.getString("nome_visita"),
+                            new Ricovero(rs.getInt("id_ricovero")),
+                            new Medico(ID_Medico)));
                 }
             }
         } catch (BadArgsException e) {
@@ -94,7 +86,6 @@ public class MedicoImplementazioneDAO implements DAO {
     @Override
     public List<Paziente> getPazienti(int ID_Medico) throws SQLException {
         List<Paziente> listaPazienti = new ArrayList<>();
-        // Filtraggio totale: vede solo i pazienti collegati ai SUOI ricoveri tramite le SUE visite
         String sql = "SELECT DISTINCT p.* FROM Paziente p " +
                 "INNER JOIN Ricovero r ON p.cod_fiscale = r.cod_fiscale_paziente " +
                 "INNER JOIN Visita v ON r.id_ricovero = v.id_ricovero " +
@@ -105,9 +96,7 @@ public class MedicoImplementazioneDAO implements DAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     listaPazienti.add(new Paziente(
-                            rs.getString("nome"),
-                            rs.getString("cognome"),
-                            rs.getString("cod_fiscale")
+                            rs.getString("nome"), rs.getString("cognome"), rs.getString("cod_fiscale")
                     ));
                 }
             }
@@ -120,7 +109,6 @@ public class MedicoImplementazioneDAO implements DAO {
     @Override
     public List<Reparto> getReparti(int ID_Medico) throws SQLException {
         List<Reparto> reparti = new ArrayList<>();
-        // Vede solo il reparto a cui appartiene lui stesso
         String sql = "SELECT r.* FROM Reparto r INNER JOIN Medico m ON r.id_reparto = m.id_reparto WHERE m.id_medico = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -139,16 +127,13 @@ public class MedicoImplementazioneDAO implements DAO {
     @Override
     public List<Stanza> getStanze(int ID_Medico) throws SQLException {
         List<Stanza> stanze = new ArrayList<>();
-        // Vede solo le stanze del SUO reparto
         String sql = "SELECT s.* FROM Stanza s INNER JOIN Medico m ON s.id_reparto = m.id_reparto WHERE m.id_medico = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, ID_Medico);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // Creiamo il reparto guscio tramite la FK
-                    Reparto repartoFk = new Reparto(null, rs.getInt("id_reparto"));
-                    stanze.add(new Stanza(repartoFk));
+                    stanze.add(new Stanza(new Reparto(null, rs.getInt("id_reparto"))));
                 }
             }
         } catch (BadArgsException e) {
@@ -166,9 +151,10 @@ public class MedicoImplementazioneDAO implements DAO {
             ps.setInt(1, ID_Medico);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    LocalDateTime inizio = rs.getObject("data_ora_inizio", LocalDateTime.class);
-                    LocalDateTime fine = rs.getObject("data_ora_fine", LocalDateTime.class);
-                    turni.add(new TurnoLavorativo(inizio, fine));
+                    turni.add(new TurnoLavorativo(
+                            rs.getObject("data_ora_inizio", LocalDateTime.class),
+                            rs.getObject("data_ora_fine", LocalDateTime.class)
+                    ));
                 }
             }
         } catch (BadArgsException e) {
@@ -177,11 +163,7 @@ public class MedicoImplementazioneDAO implements DAO {
         return turni;
     }
 
-    // Un Medico non ha permessi di leggere le liste globali degli Amministratori o di Letti sparsi
-    @Override
-    public List<Amministratore> getAmministratori(int ID_Medico) throws SQLException { return new ArrayList<>(); }
-    @Override
-    public List<Letto> getLetti(int ID_Medico) throws SQLException { return new ArrayList<>(); }
-    @Override
-    public List<Stanza> getStanzePerReparto(int ID_Medico, Reparto reparto) throws SQLException { return new ArrayList<>(); }
+    @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
+    @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
+    @Override public List<Stanza> getStanzePerReparto(int id, Reparto r) { return new ArrayList<>(); }
 }
