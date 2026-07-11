@@ -26,6 +26,30 @@ public class Paziente {
         ricoveri.add(ricovero);
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setRicoveri(List<Ricovero> ricoveri) {
+        this.ricoveri = ricoveri;
+    }
+
+    public void setCOD_FISCALE(String COD_FISCALE) {
+        this.COD_FISCALE = COD_FISCALE;
+    }
+
+    public String getCognome() {
+        return cognome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
+
     public String getCOD_FISCALE() {
         return COD_FISCALE;
     }

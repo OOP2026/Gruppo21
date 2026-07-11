@@ -35,6 +35,26 @@ public class Reparto {
         return medici;
     }
 
+    public void setStanze(List<Stanza> stanze) {
+        this.stanze = stanze;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setMedici(List<Medico> medici) {
+        this.medici = medici;
+    }
+
     public int getId() {
         return id;
     }

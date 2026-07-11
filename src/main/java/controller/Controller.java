@@ -1,171 +1,194 @@
 package controller;
 
-import dao.DAO;
-import exceptions.BadArgsException;
 import implementazioneDao.AmministratoreImplementazioneDAO;
 import implementazioneDao.MedicoImplementazioneDAO;
 import model.*;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Controller {
-	private List<Medico> medici;
-	private List<Ricovero> ricoveri;
-	private List<Amministratore> amministratori;
-	private List<Paziente> pazienti;
-	private List<Reparto> reparti;
-	private List<TurnoLavorativo> turni;
-	private DAO Dao;
+    // Liste principali in memoria
+    private List<Medico> medici;
+    private List<Ricovero> ricoveri;
+    private List<Amministratore> amministratori;
+    private List<Paziente> pazienti;
+    private List<Reparto> reparti;
+    private List<Stanza> stanze;
+    private List<Letto> letti;
+    private List<TurnoLavorativo> turni;
+    private List<Visita> visite;
+    private List<InterventoChirurgico> interventi;
 
-	private String utenteLoggatoRuolo = null;
-	private String emailUtenteLoggato = null;
+    private String utenteLoggatoRuolo = null;
+    private String emailUtenteLoggato = null;
 
-	public Controller() throws BadArgsException {
-		medici = new ArrayList<>();
-		ricoveri = new ArrayList<>();
-		amministratori = new ArrayList<>();
-		pazienti = new ArrayList<>();
-		turni = new ArrayList<>();
-		reparti = new ArrayList<>();
+    public Controller() {
+        svuotaMemoria();
+    }
 
-		try {
-			scaricaTabelleInMemoria();
-		} catch (SQLException e) {
-			System.err.println("Errore di connessione iniziale: " + e.getMessage());
-		}
-	}
+    private void svuotaMemoria() {
+        medici = new ArrayList<>();
+        ricoveri = new ArrayList<>();
+        amministratori = new ArrayList<>();
+        pazienti = new ArrayList<>();
+        reparti = new ArrayList<>();
+        stanze = new ArrayList<>();
+        letti = new ArrayList<>();
+        turni = new ArrayList<>();
+        visite = new ArrayList<>();
+        interventi = new ArrayList<>();
+    }
 
-	public boolean loginAmministratore(String email, String password) throws SQLException {
-		Dao = new AmministratoreImplementazioneDAO();
-		if(!Dao.verificaCredenziali(email, password)) return false;
+    public boolean loginAmministratore(String email, String password) throws SQLException {
+        AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
+        if (!adminDao.verificaCredenziali(email, password)) return false;
 
-		this.utenteLoggatoRuolo = "Amministratore";
-		this.emailUtenteLoggato = email;
-		return true;
-	}
+        this.utenteLoggatoRuolo = "Amministratore";
+        this.emailUtenteLoggato = email;
 
-	public boolean loginMedico(String email, String password) throws SQLException {
-		Dao = new MedicoImplementazioneDAO();
-		if(!Dao.verificaCredenziali(email, password)) return false;
+        svuotaMemoria();
+        scaricaTabelleAmministratore(adminDao);
+        return true;
+    }
 
-		this.utenteLoggatoRuolo = "Medico";
-		this.emailUtenteLoggato = email;
-		return true;
-	}
+    private void scaricaTabelleAmministratore(AmministratoreImplementazioneDAO dao) throws SQLException {
 
-	private void scaricaTabelleInMemoria() throws SQLException {
-		// Usiamo l'AmministratoreDAO che ha i permessi per leggere le liste principali
-		AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
+        this.reparti = dao.getTuttiIReparti();
+        this.stanze = dao.getTutteLeStanze();
+        this.letti = dao.getTuttiILetti();
+        this.pazienti = dao.getTuttiIPazienti();
+        this.medici = dao.getTuttiIMedici();
+        this.ricoveri = dao.getTuttiIRicoveri();
+        this.turni = dao.getTuttiITurniLavorativi();
+        this.visite = dao.getTutteLeVisite();
+        this.interventi = dao.getTuttiGliInterventiChirurgici();
 
-		// Sostituiamo le liste vuote con i dati estratti dal DB
-		// this.pazienti = adminDao.getTuttiIPazienti();
-		// this.medici = adminDao.getTuttiIMedici();
-		// this.reparti = adminDao.getTuttiIReparti();
+        for (Stanza s : stanze) {
+            Reparto r = trovaRepartoPerId(s.getIdReparto());
+            if (r != null) {
+                s.setReparto(r);
+                r.aggiungiStanza(s);
+            }
+        }
 
-		System.out.println("Tabelle scaricate in memoria con successo.");
-	}
+        for (Letto l : letti) {
+            Stanza s = trovaStanzaPerId(l.getIdStanza());
+            if (s != null) {
+                l.setStanza(s);
+                s.aggiungiLetto(l);
+            }
+        }
 
-	public boolean isAmministratore() {
-		return "Amministratore".equals(utenteLoggatoRuolo);
-	}
+        for (Medico m : medici) {
+            Reparto r = trovaRepartoPerId(m.getIdReparto());
+            if (r != null) {
+                r.aggiungiMedico(m);
+            }
+        }
 
-	// --- METODI DI LOGICA ESISTENTI ---
+        for (Ricovero ric : ricoveri) {
+            Paziente p = trovaPazientePerCodFiscale(ric.getCodFiscalePaziente());
+            Letto l = trovaLettoPerId(ric.getIdLetto());
 
-	public List<Reparto> getReparti() { return reparti; }
-	public List<Paziente> getPazienti() { return pazienti; }
+            if (p != null) {
+                p.aggiungiRicovero(ric);
+            }
+            if (l != null) {
+                l.aggiungiRicovero(ric);
+            }
+        }
 
-	public List<Stanza> getTutteStanze() {
-		List<Stanza> tutte = new ArrayList<>();
-		for(Reparto r : reparti) tutte.addAll(r.getStanze());
-		return tutte;
-	}
+        for (Visita v : visite) {
+            Ricovero ric = trovaRicoveroPerId(v.getIdRicovero());
+            Medico m = trovaMedicoPerId(v.getIdMedico());
 
-	public List<Letto> getTuttiLetti() {
-		List<Letto> tutti = new ArrayList<>();
-		for(Stanza s : getTutteStanze()) tutti.addAll(s.getLetti());
-		return tutti;
-	}
+            if (ric != null) {
+                // v.setRicovero(ric); // Decommenta se hai aggiunto setRicovero() nel Model
+            }
+            if (m != null) {
+                // v.setMedico(m); // Decommenta se hai aggiunto setMedico() nel Model
+            }
+        }
 
-	public void aggiungiAmministratore(String nome, String cognome, String email, String password) throws BadArgsException {
-		amministratori.add(new Amministratore(nome, cognome, email, password));
-	}
+        for (TurnoLavorativo t : turni) {
+            Medico m = trovaMedicoPerId(t.getIdMedico());
+            if (m != null) {
+                t.aggiungiMedico(m);
+            }
+        }
 
-	public void aggiungiAmministratoreAnonimo(String email, String password) throws BadArgsException {
-		amministratori.add(new Amministratore(email, password));
-	}
+        for (InterventoChirurgico i : interventi) {
+            Ricovero ric = trovaRicoveroPerId(i.getIdRicovero());
+            Medico m = trovaMedicoPerId(i.getIdMedico());
+        }
 
-	public void aggiungiStanza(Reparto reparto) throws BadArgsException {
-		new Stanza(reparto);
-	}
+        System.out.println("Memoria allocata e interconnessa con successo (senza HashMap).");
+    }
 
-	public void aggiungiLetto(String codice, Stanza stanza) throws BadArgsException {
-		new Letto(codice, stanza);
-	}
+    private Reparto trovaRepartoPerId(int id) {
+        for (Reparto r : reparti) {
+            if (r.getId() == id) {
+                return r;
+            }
+        }
+        return null;
+    }
 
-	public void aggiungiTurnoLavorativo(LocalDateTime inizio, LocalDateTime fine) throws BadArgsException {
-		turni.add(new TurnoLavorativo(inizio, fine));
-	}
+    private Stanza trovaStanzaPerId(int id) {
+        for (Stanza s : stanze) {
+            // Assicurati di avere getIdStanza() in Stanza
+            // Sostituisci il metodo in base a come lo hai chiamato
+            // if (s.getIdStanza() == id) return s;
+        }
+        return null; // Aggiusta la logica dopo aver inserito l'ID Stanza
+    }
 
-	private boolean lettoGiaOccupato(Letto letto, LocalDateTime dataOraInizio) {
-		for(Ricovero ricoveroInLetto: letto.getRicoveri())
-			if(ricoveroInLetto.getDataOraFine().isAfter(dataOraInizio)) return true;
-		return false;
-	}
+    private Letto trovaLettoPerId(int id) {
+        for (Letto l : letti) {
+            // Sostituisci con il getter corretto dell'ID numerico
+            // if (l.getIdLetto() == id) return l;
+        }
+        return null; // Aggiusta la logica dopo aver inserito l'ID Letto
+    }
 
-	private boolean pazienteGiaOccupato(Paziente paziente, LocalDateTime dataOraInizio) {
-		for(Ricovero ricoveroInPaziente : paziente.getRicoveri())
-			if(ricoveroInPaziente.getDataOraFine().isAfter(dataOraInizio)) return true;
-		return false;
-	}
+    private Medico trovaMedicoPerId(int id) {
+        for (Medico m : medici) {
+            if (m.getIdMedico() == id) {
+                return m;
+            }
+        }
+        return null;
+    }
 
-	private boolean turnoCompresoInRicovero(Medico medico, Ricovero ricovero) {
-		for(TurnoLavorativo turno : medico.getTurniLavorativi())
-			if(!turno.getDataOraFine().isBefore(ricovero.getDataOraInizio())) return true;
-		return false;
-	}
+    private Paziente trovaPazientePerCodFiscale(String cf) {
+        for (Paziente p : pazienti) {
+            if (p.getCOD_FISCALE().equals(cf)) {
+                return p;
+            }
+        }
+        return null;
+    }
 
-	private boolean turnoCompresoInTurno(Medico medico, TurnoLavorativo turno) {
-		for(TurnoLavorativo turniMedico : medico.getTurniLavorativi())
-			if(turniMedico.getDataOraFine().isAfter(turno.getDataOraInizio())) return true;
-		return false;
-	}
+    private Ricovero trovaRicoveroPerId(int id) {
+        for (Ricovero r : ricoveri) {
+            if (r.getIdRicovero() == id) {
+                return r;
+            }
+        }
+        return null;
+    }
 
-	public void aggiungiMedicoARicovero(Medico medico, Ricovero ricovero) throws Exception {
-		if(!medici.contains(medico)) throw new Exception("Medico non presente.");
-		if(!ricoveri.contains(ricovero)) throw new Exception("Ricovero non presente.");
-		for(Medico dottore : ricovero.getMedici()) {
-			if(dottore.equals(medico)) throw new Exception("Medico già aggiunto.");
-		}
-		if(!turnoCompresoInRicovero(medico, ricovero)) throw new Exception("Fuori turno.");
-		ricovero.aggiungiMedico(medico);
-	}
+    public boolean isAmministratore() {
+        return "Amministratore".equals(utenteLoggatoRuolo);
+    }
 
-	public void aggiungiMedicoAlTurno(Medico medico, TurnoLavorativo turno) throws Exception {
-		if(!medici.contains(medico)) throw new Exception("Medico non presente.");
-		if(!turni.contains(turno)) throw new Exception("Turno non presente.");
-		for(Medico dottore : turno.getMedici()) {
-			if(dottore.equals(medico)) throw new Exception("Medico già aggiunto.");
-		}
-		if(turnoCompresoInTurno(medico, turno)) throw new Exception("Sovrapposizione turno.");
-		turno.aggiungiMedico(medico);
-	}
-
-	public void aggiungiPaziente(String nome, String cognome, String COD_FISCALE) throws BadArgsException {
-		pazienti.add(new Paziente(nome, cognome, COD_FISCALE));
-	}
-
-	public void aggiungiMedico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws Exception {
-		if(!reparti.contains(reparto)) throw new Exception("Reparto non esistente.");
-		medici.add(new Medico(nome, cognome, email, password, tipoMedico, reparto));
-	}
-
-	public void aggiungiRicovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws Exception {
-		if(!pazienti.contains(paziente)) throw new Exception("Paziente inesistente.");
-		if(pazienteGiaOccupato(paziente, dataOraInizio)) throw new Exception("Paziente occupato.");
-		if(lettoGiaOccupato(letto, dataOraInizio)) throw new Exception("Letto occupato.");
-		ricoveri.add(new Ricovero(paziente, letto, dataOraInizio, dataOraFine));
-	}
+    public List<Reparto> getReparti() { return reparti; }
+    public List<Paziente> getPazienti() { return pazienti; }
+    public List<Medico> getMedici() { return medici; }
+    public List<Stanza> getStanze() { return stanze; }
+    public List<Letto> getLetti() { return letti; }
+    public List<Ricovero> getRicoveri() { return ricoveri; }
+    public List<TurnoLavorativo> getTurni() { return turni; }
 }

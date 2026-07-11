@@ -7,16 +7,15 @@ import java.util.List;
 
 public class Medico extends UtenteRegistrato {
 
-    private int idMedico; // Aggiunto per mappare la Primary Key del DB
+    private int idMedico;
     private String tipoMedico;
     private Reparto reparto;
     private List<Ricovero> ricoveri;
     private List<TurnoLavorativo> turniLavorativi;
     private Amministratore amministratoreDiRiferimento;
 
-    // Costruttore Guscio per la Foreign Key (usato dal DAO)
     public Medico(int idMedico) throws BadArgsException {
-        super("", "", "", ""); // Passiamo stringhe vuote al padre per non violare i vincoli
+        super("", "", "", "");
         this.idMedico = idMedico;
         this.ricoveri = new ArrayList<>();
         this.turniLavorativi = new ArrayList<>();
@@ -50,14 +49,6 @@ public class Medico extends UtenteRegistrato {
         reparto.aggiungiMedico(this);
     }
 
-    public int getIdMedico() {
-        return idMedico;
-    }
-
-    public void setIdMedico(int idMedico) {
-        this.idMedico = idMedico;
-    }
-
     public void aggiungiRicovero(Ricovero ricovero) {
         ricoveri.add(ricovero);
     }
@@ -66,16 +57,52 @@ public class Medico extends UtenteRegistrato {
         turniLavorativi.add(turnoLavorativo);
     }
 
-    public String getTipoMedico() {
-        return tipoMedico;
+    public int getIdMedico() {
+        return idMedico;
+    }
+
+    public void setIdMedico(int idMedico) {
+        this.idMedico = idMedico;
+    }
+
+    public Amministratore getAmministratoreDiRiferimento() {
+        return amministratoreDiRiferimento;
+    }
+
+    public void setAmministratoreDiRiferimento(Amministratore amministratoreDiRiferimento) {
+        this.amministratoreDiRiferimento = amministratoreDiRiferimento;
+    }
+
+    public List<TurnoLavorativo> getTurniLavorativi() {
+        return turniLavorativi;
+    }
+
+    public void setTurniLavorativi(List<TurnoLavorativo> turniLavorativi) {
+        this.turniLavorativi = turniLavorativi;
+    }
+
+    public List<Ricovero> getRicoveri() {
+        return ricoveri;
+    }
+
+    public void setRicoveri(List<Ricovero> ricoveri) {
+        this.ricoveri = ricoveri;
     }
 
     public Reparto getReparto() {
         return reparto;
     }
 
-    public List<TurnoLavorativo> getTurniLavorativi() {
-        return turniLavorativi;
+    public void setReparto(Reparto reparto) {
+        this.reparto = reparto;
+    }
+
+    public String getTipoMedico() {
+        return tipoMedico;
+    }
+
+    public void setTipoMedico(String tipoMedico) {
+        this.tipoMedico = tipoMedico;
     }
 
     @Override
