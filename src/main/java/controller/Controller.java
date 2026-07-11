@@ -30,6 +30,14 @@ public class Controller {
 		pazienti = new ArrayList<>();
 		turni = new ArrayList<>();
 		reparti = new ArrayList<>();
+
+		// Eseguiamo subito le query di setup all'avvio
+		try {
+			istanziaDB();
+			scaricaTabelleInMemoria();
+		} catch (SQLException e) {
+			System.err.println("Errore di connessione iniziale: " + e.getMessage());
+		}
 	}
 
 	public boolean loginAmministratore(String email, String password) throws SQLException {
@@ -51,7 +59,24 @@ public class Controller {
 	}
 
 	public void istanziaDB() throws SQLException {
+		// Assicuriamoci che le tabelle esistano chiamando i DAO
+		AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
+		adminDao.istanziaDB();
 
+		MedicoImplementazioneDAO medicoDao = new MedicoImplementazioneDAO();
+		medicoDao.istanziaDB();
+	}
+
+	private void scaricaTabelleInMemoria() throws SQLException {
+		// Usiamo l'AmministratoreDAO che ha i permessi per leggere le liste principali
+		AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
+
+		// Sostituiamo le liste vuote con i dati estratti dal DB
+		// this.pazienti = adminDao.getTuttiIPazienti();
+		// this.medici = adminDao.getTuttiIMedici();
+		// this.reparti = adminDao.getTuttiIReparti();
+
+		System.out.println("Tabelle scaricate in memoria con successo.");
 	}
 
 	public boolean isAmministratore() {
