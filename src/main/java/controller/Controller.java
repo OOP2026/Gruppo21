@@ -31,7 +31,6 @@ public class Controller {
 		turni = new ArrayList<>();
 		reparti = new ArrayList<>();
 
-		// Eseguiamo subito le query di setup all'avvio
 		try {
 			istanziaDB();
 			scaricaTabelleInMemoria();
@@ -59,12 +58,7 @@ public class Controller {
 	}
 
 	public void istanziaDB() throws SQLException {
-		// Assicuriamoci che le tabelle esistano chiamando i DAO
-		AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
-		adminDao.istanziaDB();
-
-		MedicoImplementazioneDAO medicoDao = new MedicoImplementazioneDAO();
-		medicoDao.istanziaDB();
+		Dao.istanziaDB();
 	}
 
 	private void scaricaTabelleInMemoria() throws SQLException {
