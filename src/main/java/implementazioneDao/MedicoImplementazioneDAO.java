@@ -35,20 +35,7 @@ public class MedicoImplementazioneDAO implements DAO {
 
     @Override
     public void istanziaDB() throws SQLException {
-        String createMedico = "CREATE TABLE IF NOT EXISTS Medico (id_medico SERIAL PRIMARY KEY, nome VARCHAR(50), cognome VARCHAR(50), email VARCHAR(100) UNIQUE, password VARCHAR(100), tipo_medico VARCHAR(50), id_reparto INT REFERENCES Reparto(id_reparto), id_amministratore INT REFERENCES Amministratore(id_amministratore));";
-        String createRicovero = "CREATE TABLE IF NOT EXISTS Ricovero (id_ricovero SERIAL PRIMARY KEY, data_ora_inizio TIMESTAMP, data_ora_fine TIMESTAMP, cod_fiscale_paziente VARCHAR(16) REFERENCES Paziente(cod_fiscale), id_letto INT REFERENCES Letto(id_letto));";
-        String createVisita = "CREATE TABLE IF NOT EXISTS Visita (id_visita SERIAL PRIMARY KEY, nome_visita VARCHAR(100), id_ricovero INT REFERENCES Ricovero(id_ricovero), id_medico INT REFERENCES Medico(id_medico));";
-        String createTurno = "CREATE TABLE IF NOT EXISTS Turno_Lavorativo (id_turno SERIAL PRIMARY KEY, data_ora_inizio TIMESTAMP, data_ora_fine TIMESTAMP, id_medico INT REFERENCES Medico(id_medico));";
-        String createIntervento = "CREATE TABLE IF NOT EXISTS Intervento_Chirurgico (id_intervento SERIAL PRIMARY KEY, nome_intervento VARCHAR(100), ruolo VARCHAR(50), id_ricovero INT REFERENCES Ricovero(id_ricovero), id_medico INT REFERENCES Medico(id_medico));";
-
-        try (PreparedStatement ps1 = connection.prepareStatement(createMedico);
-             PreparedStatement ps2 = connection.prepareStatement(createRicovero);
-             PreparedStatement ps3 = connection.prepareStatement(createVisita);
-             PreparedStatement ps4 = connection.prepareStatement(createTurno);
-             PreparedStatement ps5 = connection.prepareStatement(createIntervento)) {
-            ps1.executeUpdate(); ps2.executeUpdate(); ps3.executeUpdate(); ps4.executeUpdate(); ps5.executeUpdate();
-            System.out.println("Tabelle strutturali del Medico create e verificate.");
-        }
+        
     }
 
     @Override
