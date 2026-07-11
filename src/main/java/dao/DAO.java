@@ -10,6 +10,9 @@ public interface DAO {
 
     public Boolean verificaCredenziali(String email, String password) throws SQLException;
 
+
+    public void istanziaDB() throws SQLException;
+
     public List<Medico> getMedici(int ID_Medico) throws SQLException;
     public List<Amministratore> getAmministratori(int ID_Medico) throws SQLException;
     public List<Letto> getLetti(int ID_Medico) throws SQLException;

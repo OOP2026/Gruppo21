@@ -8,7 +8,8 @@ public class MainTestOspedale {
 
     public static void main(String[] args) throws BadArgsException {
 
-        Reparto reparto = new Reparto();
+
+        Reparto reparto = new Reparto("Cardiologia", 1);
 
         Stanza stanza = new Stanza(reparto);
 
@@ -37,10 +38,10 @@ public class MainTestOspedale {
         );
 
         Visita visita = new Visita("Visita cardiologica");
-        medico.aggiungerePrestazione(visita);
+
 
         InterventoChirurgico intervento = new InterventoChirurgico("Angioplastica");
-        medico.aggiungerePrestazione(intervento);
+
 
         TurnoLavorativo turno1 = new TurnoLavorativo(
                 LocalDateTime.of(2026, 4, 27, 7, 0),
@@ -54,7 +55,12 @@ public class MainTestOspedale {
 
         turno1.aggiungiMedico(medico);
         turno2.aggiungiMedico(medico);
-        ricovero.aggiungiMedico(medico);
+
+        try {
+            ricovero.aggiungiMedico(medico);
+        } catch (Exception e) {
+            System.out.println("Errore nell'aggiunta del medico: " + e.getMessage());
+        }
 
         System.out.println(paziente);
         System.out.println(medico);

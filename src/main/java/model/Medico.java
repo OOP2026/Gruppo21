@@ -7,11 +7,20 @@ import java.util.List;
 
 public class Medico extends UtenteRegistrato {
 
+    private int idMedico; // Aggiunto per mappare la Primary Key del DB
     private String tipoMedico;
     private Reparto reparto;
     private List<Ricovero> ricoveri;
     private List<TurnoLavorativo> turniLavorativi;
     private Amministratore amministratoreDiRiferimento;
+
+    // Costruttore Guscio per la Foreign Key (usato dal DAO)
+    public Medico(int idMedico) throws BadArgsException {
+        super("", "", "", ""); // Passiamo stringhe vuote al padre per non violare i vincoli
+        this.idMedico = idMedico;
+        this.ricoveri = new ArrayList<>();
+        this.turniLavorativi = new ArrayList<>();
+    }
 
     private void allocateAttribs(String tipoMedico, Reparto reparto) {
         this.tipoMedico = tipoMedico;
@@ -41,6 +50,14 @@ public class Medico extends UtenteRegistrato {
         reparto.aggiungiMedico(this);
     }
 
+    public int getIdMedico() {
+        return idMedico;
+    }
+
+    public void setIdMedico(int idMedico) {
+        this.idMedico = idMedico;
+    }
+
     public void aggiungiRicovero(Ricovero ricovero) {
         ricoveri.add(ricovero);
     }
@@ -57,7 +74,9 @@ public class Medico extends UtenteRegistrato {
         return reparto;
     }
 
-    public List<TurnoLavorativo> getTurniLavorativi() {return turniLavorativi;}
+    public List<TurnoLavorativo> getTurniLavorativi() {
+        return turniLavorativi;
+    }
 
     @Override
     public String toString() {

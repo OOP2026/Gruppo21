@@ -23,7 +23,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
 
     @Override
     public Boolean verificaCredenziali(String email, String password) throws SQLException {
-        String sql = "SELECT 1 FROM amministratore WHERE email = ? AND password = ?";
+        String sql = "SELECT 1 FROM Amministratore WHERE email = ? AND password = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -35,9 +35,37 @@ public class AmministratoreImplementazioneDAO implements DAO {
     }
 
     @Override
+    public void istanziaDB() throws SQLException {
+        String createAmministratore = "CREATE TABLE IF NOT EXISTS Amministratore (id_amministratore SERIAL PRIMARY KEY, nome VARCHAR(50), cognome VARCHAR(50), email VARCHAR(100) UNIQUE, password VARCHAR(100));";
+        String createReparto = "CREATE TABLE IF NOT EXISTS Reparto (id_reparto SERIAL PRIMARY KEY, nome_reparto VARCHAR(50));";
+        String createPaziente = "CREATE TABLE IF NOT EXISTS Paziente (cod_fiscale VARCHAR(16) PRIMARY KEY, nome VARCHAR(50), cognome VARCHAR(50), id_amministratore INT REFERENCES Amministratore(id_amministratore));";
+        String createStanza = "CREATE TABLE IF NOT EXISTS Stanza (id_stanza SERIAL PRIMARY KEY, id_reparto INT REFERENCES Reparto(id_reparto));";
+        String createLetto = "CREATE TABLE IF NOT EXISTS Letto (id_letto SERIAL PRIMARY KEY, cod_letto VARCHAR(20) UNIQUE, disponibilita BOOLEAN, id_stanza INT REFERENCES Stanza(id_stanza));";
+
+        String insertAdmin = "INSERT INTO Amministratore (nome, cognome, email, password) VALUES ('Admin', 'Principale', 'admin@ospedale.it', 'admin123') ON CONFLICT (email) DO NOTHING;";
+
+        try (PreparedStatement ps1 = connection.prepareStatement(createAmministratore);
+             PreparedStatement ps2 = connection.prepareStatement(createReparto);
+             PreparedStatement ps3 = connection.prepareStatement(createPaziente);
+             PreparedStatement ps4 = connection.prepareStatement(createStanza);
+             PreparedStatement ps5 = connection.prepareStatement(createLetto);
+             PreparedStatement ps6 = connection.prepareStatement(insertAdmin)) {
+
+            ps1.executeUpdate();
+            ps2.executeUpdate();
+            ps3.executeUpdate();
+            ps4.executeUpdate();
+            ps5.executeUpdate();
+            ps6.executeUpdate();
+
+            System.out.println("Tabelle strutturali dell'Amministratore create e verificate.");
+        }
+    }
+
+    @Override
     public List<Medico> getMedici(int ID_Medico) throws SQLException {
         List<Medico> listaMedici = new ArrayList<>();
-        String sql = "SELECT * FROM medico";
+        String sql = "SELECT * FROM Medico";
 
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -45,11 +73,13 @@ public class AmministratoreImplementazioneDAO implements DAO {
             while (rs.next()) {
                 String nome = rs.getString("nome");
                 String cognome = rs.getString("cognome");
-                String cf = rs.getString("codice_fiscale");
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+                String tipoMedico = rs.getString("tipo_medico");
 
-                listaMedici.add(new Medico(nome, cognome, cf));
+                listaMedici.add(new Medico(nome, cognome, email, password, tipoMedico, null));
             }
-        } catch (BadArgsException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
         return listaMedici;
@@ -57,38 +87,35 @@ public class AmministratoreImplementazioneDAO implements DAO {
 
     @Override
     public List<Amministratore> getAmministratori(int ID_Medico) throws SQLException {
-        return List.of();
+        return new ArrayList<>();
     }
 
     @Override
     public List<Letto> getLetti(int ID_Medico) throws SQLException {
-        return List.of();
+        return new ArrayList<>();
     }
 
     @Override
     public List<Stanza> getStanze(int ID_Medico) throws SQLException {
-        return List.of();
+        return new ArrayList<>();
     }
 
     @Override
     public List<Stanza> getStanzePerReparto(int ID_Medico, Reparto reparto) throws SQLException {
         List<Stanza> stanze = new ArrayList<>();
-        // Usiamo la chiave esterna id_reparto per filtrare la ricerca
-        String sql = "SELECT * FROM stanza WHERE id_reparto = ?";
+        String sql = "SELECT * FROM Stanza WHERE id_reparto = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            // Estraiamo l'ID dall'oggetto Java e lo passiamo al database
             ps.setInt(1, reparto.getId());
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String codiceStanza = rs.getString("codice");
-
-                    // Creiamo la Stanza in memoria collegandola subito al suo Reparto
-                    Stanza s = new Stanza(codiceStanza, reparto);
+                    Stanza s = new Stanza(reparto);
                     stanze.add(s);
                 }
             }
+        } catch (BadArgsException e) {
+            System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
         return stanze;
     }
@@ -96,7 +123,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
     @Override
     public List<Paziente> getPazienti(int ID_Medico) throws SQLException {
         List<Paziente> listaPazienti = new ArrayList<>();
-        String sql = "SELECT * FROM paziente";
+        String sql = "SELECT * FROM Paziente";
 
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -104,7 +131,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
             while (rs.next()) {
                 String nome = rs.getString("nome");
                 String cognome = rs.getString("cognome");
-                String cf = rs.getString("codice_fiscale");
+                String cf = rs.getString("cod_fiscale");
 
                 listaPazienti.add(new Paziente(nome, cognome, cf));
             }
@@ -123,8 +150,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                LocalDateTime dataInizio = rs.getObject("data_inizio", LocalDateTime.class);
-                LocalDateTime dataFine = rs.getObject("data_fine", LocalDateTime.class);
+                LocalDateTime dataInizio = rs.getObject("data_ora_inizio", LocalDateTime.class);
+                LocalDateTime dataFine = rs.getObject("data_ora_fine", LocalDateTime.class);
 
                 turniLavorativi.add(new TurnoLavorativo(dataInizio, dataFine));
             }
@@ -137,27 +164,25 @@ public class AmministratoreImplementazioneDAO implements DAO {
     @Override
     public List<Reparto> getReparti(int ID_Medico) throws SQLException {
         List<Reparto> reparti = new ArrayList<>();
-
         String sql = "SELECT * FROM Reparto";
 
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                String Nome = rs.getString("nome_reparto");
+                String nome = rs.getString("nome_reparto");
                 int id = rs.getInt("id_reparto");
 
-                reparti.add(new Reparto(Nome, id));
+                reparti.add(new Reparto(nome, id));
             }
         } catch (BadArgsException e) {
             System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
-
         return reparti;
     }
 
     @Override
     public List<Visita> getVisite(int ID_Medico) throws SQLException {
-        return List.of();
+        return new ArrayList<>();
     }
 }
