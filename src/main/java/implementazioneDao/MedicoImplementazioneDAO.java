@@ -93,15 +93,15 @@ public class MedicoImplementazioneDAO implements DAO {
     }
 
     @Override
-    public List<int[]> getCollegamentiGestisce() throws SQLException {
-        List<int[]> collegamenti = new ArrayList<>();
+    public List<Gestisce> getCollegamentiGestisce() throws SQLException {
+        List<Gestisce> collegamenti = new ArrayList<>();
         String sql = "SELECT id_medico, id_ricovero FROM Gestisce";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                int[] coppia = new int[2];
-                coppia[0] = rs.getInt("id_medico");
-                coppia[1] = rs.getInt("id_ricovero");
-                collegamenti.add(coppia);
+                Gestisce g = new Gestisce();
+                g.setId_medico(rs.getInt("id_medico"));
+                g.setId_ricovero(rs.getInt("id_ricovero"););
+                collegamenti.add(g);
             }
         }
         return collegamenti;

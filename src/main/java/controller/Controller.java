@@ -20,6 +20,8 @@ public class Controller {
     private List<TurnoLavorativo> turni;
     private List<Visita> visite;
     private List<InterventoChirurgico> interventi;
+    private List<Gestisce> gestisce;
+    private List<Opera> opera;
 
     private String utenteLoggatoRuolo = null;
     private int idUtenteLoggato = -1;
@@ -58,7 +60,6 @@ public class Controller {
     }
 
     private void scaricaEOrchestraTabelle(DAO dao, int idFiltro) throws SQLException {
-        // 1. SCARICAMENTO DATI PURI E GUSCI TEMPORANEI DAI DAO
         this.reparti = dao.getReparti(idFiltro);
         this.pazienti = dao.getPazienti(idFiltro);
         this.medici = dao.getMedici(idFiltro);
@@ -68,10 +69,8 @@ public class Controller {
         this.letti = dao.getLetti(idFiltro);
         this.visite = dao.getVisites(idFiltro);
         this.interventi = dao.getInterventi(idFiltro);
+        this.gestisce = dao.getCollegamentiGestisce();
 
-        // 2. ORCHESTRAZIONE DELLE RELAZIONI 1:N (SOSTITUZIONE GUSCI CON ISTANZE REALI)
-
-        // Stanza -> Reparto
         for (Stanza s : stanze) {
             if (s.getReparto() != null) {
                 Reparto rReale = trovaRepartoPerId(s.getReparto().getId());
@@ -82,7 +81,6 @@ public class Controller {
             }
         }
 
-        // Medico -> Reparto
         for (Medico m : medici) {
             if (m.getReparto() != null) {
                 Reparto rReale = trovaRepartoPerId(m.getReparto().getId());
@@ -93,7 +91,6 @@ public class Controller {
             }
         }
 
-        // TurnoLavorativo -> Medico
         for (TurnoLavorativo t : turni) {
             if (t.getMedico() != null) {
                 Medico mReale = trovaMedicoPerId(t.getMedico().getIdMedico());
@@ -104,7 +101,6 @@ public class Controller {
             }
         }
 
-        // Ricovero -> Paziente
         for (Ricovero r : ricoveri) {
             if (r.getPaziente() != null) {
                 Paziente pReale = trovaPazientePerCodFiscale(r.getPaziente().getCOD_FISCALE());
@@ -115,10 +111,6 @@ public class Controller {
             }
         }
 
-        // 3. ORCHESTRAZIONE DELLE RELAZIONI N:M TRAMITE TABELLE PONTE (ZERO DUPLICATI)
-
-        // Associazione ponte 'Gestisce' (Medico <-> Ricovero)
-        List<int[]> linksGestisce = dao.getCollegamentiGestisce();
         for (int[] link : linksGestisce) {
             Medico mReale = trovaMedicoPerId(link[0]);
             Ricovero rReale = trovaRicoveroPerId(link[1]);
@@ -128,7 +120,6 @@ public class Controller {
             }
         }
 
-        // Associazione ponte 'Opera' (Medico <-> InterventoChirurgico)
         List<Object[]> linksOpera = dao.getCollegamentiOpera();
         for (Object[] link : linksOpera) {
             Medico mReale = trovaMedicoPerId((Integer) link[0]);
@@ -142,10 +133,6 @@ public class Controller {
 
         System.out.println("Orchestrazione completata con successo mediante strutture gerarchiche.");
     }
-
-    // =====================================================================
-    // METODI DI FUNZIONE E DI RICERCA INTERNA
-    // =====================================================================
 
     private Reparto trovaRepartoPerId(int id) {
         for (Reparto r : reparti) { if (r.getId() == id) return r; }

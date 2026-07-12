@@ -20,6 +20,6 @@ public interface DAO {
     List<Stanza> getStanzePerReparto(int id, Reparto reparto) throws SQLException;
 
     // Metodi per le tabelle ponte N:M
-    List<int[]> getCollegamentiGestisce() throws SQLException;
-    List<Object[]> getCollegamentiOpera() throws SQLException;
+    List<Gestisce> getCollegamentiGestisce() throws SQLException;
+    List<Opera> getCollegamentiOpera() throws SQLException;
 }

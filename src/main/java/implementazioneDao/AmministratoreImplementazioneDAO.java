@@ -156,46 +156,37 @@ public class AmministratoreImplementazioneDAO implements DAO {
         return lista;
     }
 
-    // =====================================================================
-    // ESTRAZIONE TABELLE PONTE (RELAZIONI N:M) - ZERO GUSCI
-    // =====================================================================
-
-    // Tabella ponte: GESTISCE (Associazione tra Medico e Ricovero)
-    public List<int[]> getCollegamentiGestisce() throws SQLException {
-        List<int[]> collegamenti = new ArrayList<>();
+    public List<Gestisce> getCollegamentiGestisce() throws SQLException {
+        List<Gestisce> collegamenti = new ArrayList<>();
         String sql = "SELECT id_medico, id_ricovero FROM Gestisce";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                int[] coppia = new int[2];
-                coppia[0] = rs.getInt("id_medico");
-                coppia[1] = rs.getInt("id_ricovero");
-                collegamenti.add(coppia);
+                Gestisce g = new Gestisce();
+                g.setId_medico(rs.getInt("id_medico"););
+                g.setId_ricovero(rs.getInt("id_ricovero"));
+                collegamenti.add(g);
             }
         }
         return collegamenti;
     }
 
     // Tabella ponte: OPERA (Associazione tra Medico e Intervento con attributo aggiuntivo)
-    public List<Object[]> getCollegamentiOpera() throws SQLException {
-        List<Object[]> collegamenti = new ArrayList<>();
+    public List<Opera> getCollegamentiOpera() throws SQLException {
+        List<Opera> collegamenti = new ArrayList<>();
         String sql = "SELECT id_medico, id_intervento, ruolo FROM Opera";
 
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Object[] tripla = new Object[3];
-                tripla[0] = rs.getInt("id_medico");       // Intero
-                tripla[1] = rs.getInt("id_intervento");   // Intero
-                tripla[2] = rs.getString("ruolo");        // Stringa (es. "Primo Chirurgo")
-                collegamenti.add(tripla);
+                Opera opera = new Opera();
+                opera.setId_medico(rs.getInt("id_medico"));       // Intero
+                opera.setId_intervento(rs.getInt("id_intervento"));   // Intero
+                opera.setRuolo(rs.getString("ruolo"););        // Stringa (es. "Primo Chirurgo")
+                collegamenti.add(opera);
             }
         }
         return collegamenti;
     }
-
-    // =====================================================================
-    // METODI RESTANTI DELL'INTERFACCIA DAO
-    // =====================================================================
 
     @Override
     public List<Amministratore> getAmministratori(int id) throws SQLException {
