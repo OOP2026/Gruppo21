@@ -276,6 +276,32 @@ public class MainGUI extends JFrame {
         return p;
     }
 
+    // --- Metodo Helper per centralizzare il layout standard ed eliminare le righe duplicate ---
+    private JPanel creaPannelloStandardGestione(JTable table, java.awt.event.ActionListener actionAggiungi, java.awt.event.ActionListener actionModifica, java.awt.event.ActionListener actionElimina) {
+        JPanel p = new JPanel(new BorderLayout());
+        p.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        JPanel bP = new JPanel();
+        if (actionAggiungi != null) {
+            JButton bA = new JButton(BTN_AGGIUNGI);
+            bA.addActionListener(actionAggiungi);
+            bP.add(bA);
+        }
+        if (actionModifica != null) {
+            JButton bM = new JButton(BTN_MODIFICA);
+            bM.addActionListener(actionModifica);
+            bP.add(bM);
+        }
+        if (actionElimina != null) {
+            JButton bE = new JButton(BTN_ELIMINA);
+            bE.addActionListener(actionElimina);
+            bP.add(bE);
+        }
+        p.add(bP, BorderLayout.SOUTH);
+
+        return p;
+    }
+
     private JPanel creaPannelloPazienti() {
         DefaultTableModel tm = new DefaultTableModel(new String[]{"Cod Fiscale", "Nome", "Cognome"}, 0);
         JTable table = new JTable(tm);
@@ -283,43 +309,32 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{p.getCodFiscale(), p.getNome(), p.getCognome()});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogPaziente(null));
-        bM.addActionListener(e -> {
-            int r = table.getSelectedRow();
-            if (r != -1) {
-                apriDialogPaziente(controller.getPazienti().get(r));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int r = table.getSelectedRow();
-            if (r != -1) {
-                if (JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                    try {
-                        controller.eliminaPaziente((String) tm.getValueAt(r, 0));
-                        rinfrescaDashboard();
-                    } catch (Exception ex) {
-                        gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogPaziente(null),
+                e -> {
+                    int r = table.getSelectedRow();
+                    if (r != -1) {
+                        apriDialogPaziente(controller.getPazienti().get(r));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int r = table.getSelectedRow();
+                    if (r != -1) {
+                        if (JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                            try {
+                                controller.eliminaPaziente((String) tm.getValueAt(r, 0));
+                                rinfrescaDashboard();
+                            } catch (Exception ex) {
+                                gestisciEccezioneGUI(ex);
+                            }
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
                     }
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogPaziente(Paziente p) {
@@ -363,39 +378,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{m.getIdMedico(), m.getNome(), m.getCognome(), reparto, m.getTipoMedico()});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogMedico(null));
-        bM.addActionListener(e -> {
-            int r = table.getSelectedRow();
-            if (r != -1) {
-                apriDialogMedico(controller.getMedici().get(r));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int r = table.getSelectedRow();
-            if (r != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaMedico((int) tm.getValueAt(r, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogMedico(null),
+                e -> {
+                    int r = table.getSelectedRow();
+                    if (r != -1) {
+                        apriDialogMedico(controller.getMedici().get(r));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int r = table.getSelectedRow();
+                    if (r != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaMedico((int) tm.getValueAt(r, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (r == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogMedico(Medico med) {
@@ -443,37 +449,28 @@ public class MainGUI extends JFrame {
     private JPanel creaPannelloVisite() {
         DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Nome Visita", "Ricovero ID", RUOLO_MEDICO}, 0);
         JTable table = new JTable(tm);
-
         popolaTabellaVisite(tm);
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> {
-            apriDialogVisita();
-            popolaTabellaVisite(tm);
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                try {
-                    controller.eliminaVisita((int) tm.getValueAt(rw, 0));
+        return creaPannelloStandardGestione(table,
+                e -> {
+                    apriDialogVisita();
                     popolaTabellaVisite(tm);
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+                },
+                null, // Il pannello visite nativamente non ha un'azione Modifica legata al bottone standard
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        try {
+                            controller.eliminaVisita((int) tm.getValueAt(rw, 0));
+                            popolaTabellaVisite(tm);
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        return p;
+        );
     }
 
     private void popolaTabellaVisite(DefaultTableModel tm) {
@@ -492,39 +489,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{r.getId(), r.getNome()});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogReparto(null));
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogReparto(controller.getReparti().get(rw));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaReparto((int) tm.getValueAt(rw, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogReparto(null),
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogReparto(controller.getReparti().get(rw));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaReparto((int) tm.getValueAt(rw, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogReparto(Reparto r) {
@@ -560,39 +548,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{s.getIdStanza(), reparto});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogStanza(null));
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogStanza(controller.getStanze().get(rw));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaStanza((int) tm.getValueAt(rw, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogStanza(null),
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogStanza(controller.getStanze().get(rw));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaStanza((int) tm.getValueAt(rw, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogStanza(Stanza s) {
@@ -635,39 +614,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{l.getIdLetto(), stanza});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogLetto(null));
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogLetto(controller.getLetti().get(rw));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaLetto((int) tm.getValueAt(rw, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogLetto(null),
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogLetto(controller.getLetti().get(rw));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaLetto((int) tm.getValueAt(rw, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogLetto(Letto l) {
@@ -710,39 +680,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{t.getIdTurno(), t.getDataOraInizio(), t.getDataOraFine(), medico});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogTurno(null));
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogTurno(controller.getTurni().get(rw));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaTurno((int) tm.getValueAt(rw, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogTurno(null),
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogTurno(controller.getTurni().get(rw));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaTurno((int) tm.getValueAt(rw, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogTurno(TurnoLavorativo t) {
@@ -823,39 +784,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{r.getIdRicovero(), paziente, letto, r.getDataOraInizio(), r.getDataOraFine()});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogRicovero(null));
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogRicovero(controller.getRicoveri().get(rw));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaRicovero((int) tm.getValueAt(rw, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogRicovero(null),
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogRicovero(controller.getRicoveri().get(rw));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaRicovero((int) tm.getValueAt(rw, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogRicovero(Ricovero r) {
@@ -906,46 +858,36 @@ public class MainGUI extends JFrame {
     private JPanel creaPannelloInterventi() {
         DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Nome", LITERAL_INIZIO, "Fine", "Visita ID"}, 0);
         JTable table = new JTable(tm);
-
         popolaTabellaInterventi(tm);
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> {
-            apriDialogIntervento(null);
-            popolaTabellaInterventi(tm);
-        });
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogIntervento(controller.getInterventi().get(rw));
-                popolaTabellaInterventi(tm);
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleziona un intervento!");
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaIntervento((int) tm.getValueAt(rw, 0));
+        return creaPannelloStandardGestione(table,
+                e -> {
+                    apriDialogIntervento(null);
                     popolaTabellaInterventi(tm);
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogIntervento(controller.getInterventi().get(rw));
+                        popolaTabellaInterventi(tm);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Seleziona un intervento!");
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaIntervento((int) tm.getValueAt(rw, 0));
+                            popolaTabellaInterventi(tm);
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void popolaTabellaInterventi(DefaultTableModel tm) {
@@ -1010,39 +952,30 @@ public class MainGUI extends JFrame {
             tm.addRow(new Object[]{a.getId(), a.getNome(), a.getCognome(), a.getEmail()});
         }
 
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel bP = new JPanel();
-        JButton bA = new JButton(BTN_AGGIUNGI);
-        JButton bM = new JButton(BTN_MODIFICA);
-        JButton bE = new JButton(BTN_ELIMINA);
-        bP.add(bA);
-        bP.add(bM);
-        bP.add(bE);
-        p.add(bP, BorderLayout.SOUTH);
-
-        bA.addActionListener(e -> apriDialogAdmin(null));
-        bM.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1) {
-                apriDialogAdmin(controller.getAmministratori().get(rw));
-            } else {
-                JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
-            }
-        });
-        bE.addActionListener(e -> {
-            int rw = table.getSelectedRow();
-            if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
-                try {
-                    controller.eliminaAmministratore((int) tm.getValueAt(rw, 0));
-                    rinfrescaDashboard();
-                } catch (Exception ex) {
-                    gestisciEccezioneGUI(ex);
+        return creaPannelloStandardGestione(table,
+                e -> apriDialogAdmin(null),
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1) {
+                        apriDialogAdmin(controller.getAmministratori().get(rw));
+                    } else {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
+                },
+                e -> {
+                    int rw = table.getSelectedRow();
+                    if (rw != -1 && JOptionPane.showConfirmDialog(this, MSG_CONFERMA_ELIMINAZIONE) == JOptionPane.YES_OPTION) {
+                        try {
+                            controller.eliminaAmministratore((int) tm.getValueAt(rw, 0));
+                            rinfrescaDashboard();
+                        } catch (Exception ex) {
+                            gestisciEccezioneGUI(ex);
+                        }
+                    } else if (rw == -1) {
+                        JOptionPane.showMessageDialog(this, MSG_SELEZIONA_RIGA);
+                    }
                 }
-            }
-        });
-        return p;
+        );
     }
 
     private void apriDialogAdmin(Amministratore a) {

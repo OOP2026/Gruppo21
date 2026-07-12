@@ -1,5 +1,6 @@
 package controller;
 
+import exceptions.BadArgsException;
 import implementazione_dao.AmministratoreImplementazioneDAO;
 import implementazione_dao.MedicoImplementazioneDAO;
 import dao.DAO;
@@ -245,7 +246,7 @@ public class Controller {
     public List<Visita> getVisite() { return visite; }
     public List<InterventoChirurgico> getInterventi() { return interventi; }
 
-    public void salvaPaziente(String codiceFiscale, String nome, String cognome, boolean isModifica) throws Exception {
+    public void salvaPaziente(String codiceFiscale, String nome, String cognome, boolean isModifica) throws SQLException, BadArgsException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         Paziente p = new Paziente(nome, cognome, codiceFiscale);
 
@@ -257,13 +258,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaPaziente(String codiceFiscale) throws Exception {
+    public void eliminaPaziente(String codiceFiscale) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaPaziente(codiceFiscale);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaMedico(int id, String nome, String cognome, String email, String password, String tipo, Reparto reparto, boolean isModifica) throws Exception {
+    public void salvaMedico(int id, String nome, String cognome, String email, String password, String tipo, Reparto reparto, boolean isModifica) throws SQLException, BadArgsException {
         Medico med = new Medico(nome, cognome, email, password, tipo, reparto);
         med.setIdMedico(id);
 
@@ -276,13 +277,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaMedico(int id) throws Exception {
+    public void eliminaMedico(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaMedico(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaReparto(int id, String nome, boolean isModifica) throws Exception {
+    public void salvaReparto(int id, String nome, boolean isModifica) throws SQLException, BadArgsException {
         Reparto r = new Reparto(nome, id);
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
 
@@ -294,13 +295,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaReparto(int id) throws Exception {
+    public void eliminaReparto(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaReparto(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaStanza(int id, Reparto r, boolean isModifica) throws Exception {
+    public void salvaStanza(int id, Reparto r, boolean isModifica) throws SQLException, BadArgsException {
         Stanza s = new Stanza(r);
         s.setIdStanza(id);
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
@@ -313,13 +314,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaStanza(int id) throws Exception {
+    public void eliminaStanza(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaStanza(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaLetto(int id, Stanza s, boolean isModifica) throws Exception {
+    public void salvaLetto(int id, Stanza s, boolean isModifica) throws SQLException, BadArgsException {
         Letto l;
         if (isModifica) {
             l = new Letto(id, s);
@@ -336,13 +337,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaLetto(int id) throws Exception {
+    public void eliminaLetto(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaLetto(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaTurno(int id, LocalDateTime inizio, LocalDateTime fine, Medico med, boolean isModifica) throws Exception {
+    public void salvaTurno(int id, LocalDateTime inizio, LocalDateTime fine, Medico med, boolean isModifica) throws SQLException, BadArgsException {
         TurnoLavorativo t = new TurnoLavorativo(inizio, fine);
         t.setIdTurno(id);
 
@@ -355,13 +356,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaTurno(int id) throws Exception {
+    public void eliminaTurno(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaTurno(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaRicovero(int id, LocalDateTime inizio, LocalDateTime fine, Paziente p, Letto l, boolean isModifica) throws Exception {
+    public void salvaRicovero(int id, LocalDateTime inizio, LocalDateTime fine, Paziente p, Letto l, boolean isModifica) throws SQLException {
         Ricovero r = new Ricovero(id);
         r.setDataOraInizio(inizio);
         r.setDataOraFine(fine);
@@ -375,13 +376,13 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaRicovero(int id) throws Exception {
+    public void eliminaRicovero(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaRicovero(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaIntervento(int id, String nome, LocalDateTime inizio, LocalDateTime fine, Visita v, boolean isModifica) throws Exception {
+    public void salvaIntervento(int id, String nome, LocalDateTime inizio, LocalDateTime fine, Visita v, boolean isModifica) throws SQLException, BadArgsException {
         InterventoChirurgico i = new InterventoChirurgico(nome, inizio, fine, v);
         i.setIdIntervento(id);
 
@@ -394,13 +395,13 @@ public class Controller {
         scaricaEOrchestraTabelle(adminDao, 0);
     }
 
-    public void eliminaIntervento(int id) throws Exception {
+    public void eliminaIntervento(int id) throws SQLException {
         AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
         adminDao.eliminaIntervento(id);
         scaricaEOrchestraTabelle(adminDao, 0);
     }
 
-    public void salvaAmministratore(int id, String nome, String cognome, String email, String password, boolean isModifica) throws Exception {
+    public void salvaAmministratore(int id, String nome, String cognome, String email, String password, boolean isModifica) throws SQLException, BadArgsException {
         Amministratore a = new Amministratore(nome, cognome, email, password);
         a.setId(id);
 
@@ -413,46 +414,46 @@ public class Controller {
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void eliminaAmministratore(int id) throws Exception {
+    public void eliminaAmministratore(int id) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.eliminaAmministratore(id);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
     // N:N - GESTISCE (Medico - Ricovero)
-    public void collegaMedicoRicovero(int idMedico, int idRicovero) throws Exception {
+    public void collegaMedicoRicovero(int idMedico, int idRicovero) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.collegaMedicoRicovero(idMedico, idRicovero);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void scollegaMedicoRicovero(int idMedico, int idRicovero) throws Exception {
+    public void scollegaMedicoRicovero(int idMedico, int idRicovero) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.scollegaMedicoRicovero(idMedico, idRicovero);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
     // N:N - OPERA (Medico - Intervento)
-    public void collegaMedicoIntervento(int idMedico, int idIntervento, String ruolo) throws Exception {
+    public void collegaMedicoIntervento(int idMedico, int idIntervento, String ruolo) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.collegaMedicoIntervento(idMedico, idIntervento, ruolo);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void scollegaMedicoIntervento(int idMedico, int idIntervento) throws Exception {
+    public void scollegaMedicoIntervento(int idMedico, int idIntervento) throws SQLException {
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         dao.scollegaMedicoIntervento(idMedico, idIntervento);
         scaricaEOrchestraTabelle(dao, 0);
     }
 
-    public void salvaVisita(String nome, Ricovero r, Medico m) throws Exception {
+    public void salvaVisita(String nome, Ricovero r, Medico m) throws SQLException, BadArgsException {
         Visita v = new Visita(nome, r, m);
         AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
         adminDao.inserisciVisita(v);
         scaricaEOrchestraTabelle(adminDao, 0);
     }
 
-    public void eliminaVisita(int id) throws Exception {
+    public void eliminaVisita(int id) throws SQLException {
         AmministratoreImplementazioneDAO adminDao = new AmministratoreImplementazioneDAO();
         adminDao.eliminaVisita(id);
         scaricaEOrchestraTabelle(adminDao, 0);
