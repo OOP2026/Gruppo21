@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static implementazione_dao.connection.connect;
+import static implementazione_dao.connection.sqlVerificaCredenziali;
+
 public class AmministratoreImplementazioneDAO implements DAO {
     private static Connection connection;
 
@@ -20,17 +23,12 @@ public class AmministratoreImplementazioneDAO implements DAO {
     private static final String ID_RICOVERO_DB = "id_ricovero";
 
     public AmministratoreImplementazioneDAO() {
-        try { connection = ConnessioneDatabase.getInstance().getConnection(); }
-        catch (SQLException e) { throw new RuntimeException(e); }
+        connection = connect();
     }
 
     @Override
     public Boolean verificaCredenziali(String email, String password) throws SQLException {
-        String sql = "SELECT 1 FROM Amministratore WHERE email = ? AND password = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, email); ps.setString(2, password);
-            try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
-        }
+        return sqlVerificaCredenziali(connection, email, password, true);
     }
 
     @Override
