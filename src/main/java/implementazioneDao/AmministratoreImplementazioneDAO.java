@@ -18,11 +18,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
     }
 
     @Override
-    public void istanziaMemoriaLocale(int id) throws SQLException {
-        // Stateless: Il DAO non memorizza nulla. Il Controller chiamerà i singoli metodi.
-    }
-
-    @Override
     public Boolean verificaCredenziali(String email, String password) throws SQLException {
         String sql = "SELECT 1 FROM Amministratore WHERE email = ? AND password = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -64,7 +59,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    // Creiamo il Medico. La FK del reparto la inseriamo come guscio.
                     Reparto guscioReparto = new Reparto(rs.getInt("id_reparto"));
                     Medico m = new Medico(rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"), rs.getString("tipo_medico"), guscioReparto);
                     m.setIdMedico(rs.getInt("id_medico"));
@@ -98,7 +92,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
             while (rs.next()) {
                 try {
                     TurnoLavorativo t = new TurnoLavorativo(rs.getObject("data_ora_inizio", LocalDateTime.class), rs.getObject("data_ora_fine", LocalDateTime.class));
-                    // Nota: se il costruttore di Turno prende un Medico, passagli: new Medico(rs.getInt("id_medico"))
+                    t.setMedico(new Medico(rs.getInt("id_medico")));
                     lista.add(t);
                 } catch (BadArgsException e) {}
             }
@@ -106,6 +100,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
         return lista;
     }
 
+    @Override
     public List<Ricovero> getRicoveri(int id) throws SQLException {
         List<Ricovero> lista = new ArrayList<>();
         String sql = "SELECT * FROM Ricovero";
@@ -115,9 +110,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
                 r.setDataOraInizio(rs.getObject("data_ora_inizio", LocalDateTime.class));
                 r.setDataOraFine(rs.getObject("data_ora_fine", LocalDateTime.class));
 
-                // Impostiamo i gusci per le Foreign Key
                 r.setPaziente(new Paziente(rs.getString("cod_fiscale_paziente")));
-                // r.setLetto(new Letto(rs.getInt("id_letto"))); // Se hai il guscio letto
+                r.setLetto(new Letto(rs.getInt("id_letto")));
 
                 lista.add(r);
             }
@@ -125,7 +119,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
         return lista;
     }
 
-    // Metodi di completamento
     @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
     @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
     @Override public List<Visita> getVisite(int id) { return new ArrayList<>(); }

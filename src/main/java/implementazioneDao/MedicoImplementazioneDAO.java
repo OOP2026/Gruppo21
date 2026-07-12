@@ -133,6 +133,11 @@ public class MedicoImplementazioneDAO implements DAO {
     }
 
     @Override
+    public List<Ricovero> getRicoveri(int i) throws SQLException {
+        return List.of();
+    }
+
+    @Override
     public List<TurnoLavorativo> getTurniLavorativi(int id) {
         // Se il controller chiede i turni, li peschiamo direttamente dall'oggetto Medico caricato
         if (!this.mediciCorrenti.isEmpty()) {

@@ -15,7 +15,6 @@ public class Ricovero {
     private Letto letto;
     private List<Medico> medici;
 
-    // Costruttore Guscio per la Foreign Key (usato dal DAO)
     public Ricovero(int idRicovero) {
         this.idRicovero = idRicovero;
         this.medici = new ArrayList<>();

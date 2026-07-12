@@ -13,7 +13,7 @@ public class MainTestOspedale {
 
         Stanza stanza = new Stanza(reparto);
 
-        Letto letto = new Letto("L001", stanza);
+        Letto letto = new Letto(1, stanza);
 
         Paziente paziente = new Paziente(
                 "Mario",

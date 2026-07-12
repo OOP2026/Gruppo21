@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 public class TurnoLavorativo {
     private int idTurno;
-    private int idMedico;
 
     private LocalDateTime dataOraInizio;
     private LocalDateTime dataOraFine;
@@ -21,9 +20,6 @@ public class TurnoLavorativo {
 
     public int getIdTurno() { return idTurno; }
     public void setIdTurno(int idTurno) { this.idTurno = idTurno; }
-
-    public int getIdMedico() { return idMedico; }
-    public void setIdMedico(int idMedico) { this.idMedico = idMedico; }
 
     public Medico getMedico() { return medico; }
     public void setMedico(Medico medico) { this.medico = medico; }

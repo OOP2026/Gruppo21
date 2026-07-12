@@ -7,27 +7,31 @@ import java.util.List;
 
 public class Letto {
 
-    private String codiceLetto;
+    private int id_letto;
     private Stanza stanza;
     private List<Ricovero> ricoveri;
 
-    public Letto(String codiceLetto, Stanza stanza) throws BadArgsException {
-        if(codiceLetto == null || stanza == null) throw new BadArgsException("La classe Letto ha degli attributi NULLI.");
-        if(codiceLetto.isEmpty()) throw new BadArgsException("La classe Letto ha degli attributi VUOTI.");
+    public Letto(int id_letto, Stanza stanza) throws BadArgsException {
+        if(stanza == null) throw new BadArgsException("La classe Letto ha degli attributi NULLI.");
 
-        this.codiceLetto = codiceLetto;
+        this.id_letto = id_letto;
         this.stanza = stanza;
         this.ricoveri = new ArrayList<>();
 
         stanza.aggiungiLetto(this);
     }
 
+    public Letto(int id_letto) {
+        this.id_letto = id_letto;
+        this.ricoveri = new ArrayList<>();
+    }
+
     public void aggiungiRicovero(Ricovero ricovero) {
         ricoveri.add(ricovero);
     }
 
-    public String getCodiceLetto() {
-        return codiceLetto;
+    public int getId_letto() {
+        return id_letto;
     }
 
     public Stanza getStanza() {
@@ -42,6 +46,6 @@ public class Letto {
 
     @Override
     public String toString() {
-        return "Letto " + codiceLetto;
+        return "Letto " + id_letto;
     }
 }
