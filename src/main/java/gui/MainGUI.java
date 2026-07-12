@@ -26,6 +26,13 @@ public class MainGUI extends JFrame {
     private static final String MSG_CONFERMA_ELIMINAZIONE = "Sei sicuro di voler eliminare questo elemento?";
     private static final String MSG_SELEZIONA_RIGA = "Seleziona una riga!";
     private static final String TITOLO_ERRORE = "Errore";
+    private static final String LITERAL_NOME_DOUBLEPOINT = "Nome: ";
+    private static final String LITERAL_COGNOME_DOUBLEPOINT = "Cognome: ";
+    private static final String LITERAL_EMAIL_DOUBLEPOINT = "Email: ";
+    private static final String LITERAL_PASSWORD_DOUBLEPOINT = "Password: ";
+    private static final String LITERAL_INIZIO = "Inizio";
+    private static final String LITERAL_MEDICO_DOUBLEPOINT = "Medico:";
+    private static final String FIRST_DATE_FALLBACK = "2024-01-01 08:00";
 
     private transient Controller controller;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -70,13 +77,13 @@ public class MainGUI extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        panelLogin.add(new JLabel("Email:"), gbc);
+        panelLogin.add(new JLabel(LITERAL_EMAIL_DOUBLEPOINT), gbc);
         gbc.gridx = 1;
         panelLogin.add(txtEmail, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        panelLogin.add(new JLabel("Password:"), gbc);
+        panelLogin.add(new JLabel(LITERAL_PASSWORD_DOUBLEPOINT), gbc);
         gbc.gridx = 1;
         panelLogin.add(txtPassword, gbc);
 
@@ -200,9 +207,9 @@ public class MainGUI extends JFrame {
 
         p.add(new JLabel("<html><h2>Scheda Personale</h2></html>"), g);
         g.gridy++;
-        p.add(new JLabel("Nome: " + m.getNome() + " " + m.getCognome()), g);
+        p.add(new JLabel(LITERAL_NOME_DOUBLEPOINT + m.getNome() + " " + m.getCognome()), g);
         g.gridy++;
-        p.add(new JLabel("Email: " + m.getEmail() + " | Qualifica: " + m.getTipoMedico()), g);
+        p.add(new JLabel(LITERAL_EMAIL_DOUBLEPOINT + m.getEmail() + " | Qualifica: " + m.getTipoMedico()), g);
         g.gridy++;
         String repartoNome = m.getReparto() != null ? m.getReparto().getNome() : "Nessuno";
         p.add(new JLabel("Reparto: " + repartoNome), g);
@@ -229,7 +236,7 @@ public class MainGUI extends JFrame {
 
     private JPanel creaPannelloTurniMedico() {
         JPanel p = new JPanel(new BorderLayout());
-        DefaultTableModel tm = new DefaultTableModel(new String[]{"Inizio", "Fine"}, 0);
+        DefaultTableModel tm = new DefaultTableModel(new String[]{LITERAL_INIZIO, "Fine"}, 0);
         Medico m = getMedicoLoggato();
 
         if (m != null && m.getTurniLavorativi() != null) {
@@ -327,9 +334,9 @@ public class MainGUI extends JFrame {
         JTextField tCF = new JTextField(m ? p.getCodFiscale() : "");
         if (m) tCF.setEditable(false);
 
-        d.add(new JLabel("Nome:"));
+        d.add(new JLabel(LITERAL_NOME_DOUBLEPOINT));
         d.add(tN);
-        d.add(new JLabel("Cognome:"));
+        d.add(new JLabel(LITERAL_COGNOME_DOUBLEPOINT));
         d.add(tC);
         d.add(new JLabel("CF:"));
         d.add(tCF);
@@ -412,10 +419,10 @@ public class MainGUI extends JFrame {
             }
         }
 
-        d.add(new JLabel("Nome:")); d.add(tN);
-        d.add(new JLabel("Cognome:")); d.add(tC);
-        d.add(new JLabel("Email:")); d.add(tE);
-        d.add(new JLabel("Password:")); d.add(tP);
+        d.add(new JLabel(LITERAL_NOME_DOUBLEPOINT)); d.add(tN);
+        d.add(new JLabel(LITERAL_COGNOME_DOUBLEPOINT)); d.add(tC);
+        d.add(new JLabel(LITERAL_EMAIL_DOUBLEPOINT)); d.add(tE);
+        d.add(new JLabel(LITERAL_PASSWORD_DOUBLEPOINT)); d.add(tP);
         d.add(new JLabel("Tipo:")); d.add(tT);
         d.add(new JLabel("Reparto:")); d.add(cR);
 
@@ -696,7 +703,7 @@ public class MainGUI extends JFrame {
     }
 
     private JPanel creaPannelloTurni() {
-        DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Inizio", "Fine", RUOLO_MEDICO}, 0);
+        DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", LITERAL_INIZIO, "Fine", RUOLO_MEDICO}, 0);
         JTable table = new JTable(tm);
         for (TurnoLavorativo t : controller.getTurni()) {
             String medico = t.getMedico() != null ? t.getMedico().getNome() : "";
@@ -745,7 +752,7 @@ public class MainGUI extends JFrame {
         d.setSize(400, 200);
         d.setLocationRelativeTo(this);
 
-        JTextField tI = new JTextField(m ? t.getDataOraInizio().format(formatter) : "2024-01-01 08:00");
+        JTextField tI = new JTextField(m ? t.getDataOraInizio().format(formatter) : FIRST_DATE_FALLBACK);
         JTextField tF = new JTextField(m ? t.getDataOraFine().format(formatter) : "2024-01-01 16:00");
 
         JComboBox<Medico> cM = new JComboBox<>();
@@ -758,7 +765,7 @@ public class MainGUI extends JFrame {
 
         d.add(new JLabel("Inizio (yyyy-MM-dd HH:mm):")); d.add(tI);
         d.add(new JLabel("Fine (yyyy-MM-dd HH:mm):")); d.add(tF);
-        d.add(new JLabel("Medico:")); d.add(cM);
+        d.add(new JLabel(LITERAL_MEDICO_DOUBLEPOINT)); d.add(cM);
 
         JButton bS = new JButton(BTN_SALVA);
         d.add(bS);
@@ -791,7 +798,7 @@ public class MainGUI extends JFrame {
 
         d.add(new JLabel("Nome Visita:")); d.add(tN);
         d.add(new JLabel("Ricovero:")); d.add(cR);
-        d.add(new JLabel("Medico:")); d.add(cM);
+        d.add(new JLabel(LITERAL_MEDICO_DOUBLEPOINT)); d.add(cM);
 
         JButton bS = new JButton(BTN_SALVA);
         d.add(bS);
@@ -808,7 +815,7 @@ public class MainGUI extends JFrame {
     }
 
     private JPanel creaPannelloRicoveri() {
-        DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Paziente", "Letto", "Inizio", "Fine"}, 0);
+        DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Paziente", "Letto", LITERAL_INIZIO, "Fine"}, 0);
         JTable table = new JTable(tm);
         for (Ricovero r : controller.getRicoveri()) {
             String paziente = r.getPaziente() != null ? r.getPaziente().getCodFiscale() : "";
@@ -874,12 +881,12 @@ public class MainGUI extends JFrame {
             }
         }
 
-        JTextField tI = new JTextField(m && r.getDataOraInizio() != null ? r.getDataOraInizio().format(formatter) : "2024-01-01 08:00");
+        JTextField tI = new JTextField(m && r.getDataOraInizio() != null ? r.getDataOraInizio().format(formatter) : FIRST_DATE_FALLBACK);
         JTextField tF = new JTextField(m && r.getDataOraFine() != null ? r.getDataOraFine().format(formatter) : "2024-01-10 16:00");
 
         d.add(new JLabel("Paziente:")); d.add(cP);
         d.add(new JLabel("Letto:")); d.add(cL);
-        d.add(new JLabel("Inizio:")); d.add(tI);
+        d.add(new JLabel(LITERAL_INIZIO)); d.add(tI);
         d.add(new JLabel("Fine:")); d.add(tF);
 
         JButton bS = new JButton(BTN_SALVA);
@@ -897,7 +904,7 @@ public class MainGUI extends JFrame {
     }
 
     private JPanel creaPannelloInterventi() {
-        DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Nome", "Inizio", "Fine", "Visita ID"}, 0);
+        DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Nome", LITERAL_INIZIO, "Fine", "Visita ID"}, 0);
         JTable table = new JTable(tm);
 
         popolaTabellaInterventi(tm);
@@ -957,7 +964,7 @@ public class MainGUI extends JFrame {
         d.setLocationRelativeTo(this);
 
         JTextField tN = new JTextField(m ? i.getNomeIntervento() : "");
-        JTextField tI = new JTextField(m && i.getDataOraInizio() != null ? i.getDataOraInizio().format(formatter) : "2024-01-01 08:00");
+        JTextField tI = new JTextField(m && i.getDataOraInizio() != null ? i.getDataOraInizio().format(formatter) : FIRST_DATE_FALLBACK);
         JTextField tF = new JTextField(m && i.getDataOraFine() != null ? i.getDataOraFine().format(formatter) : "2024-01-01 10:00");
 
         JComboBox<Visita> cV = new JComboBox<>();
@@ -1050,10 +1057,10 @@ public class MainGUI extends JFrame {
         JTextField tE = new JTextField(m ? a.getEmail() : "");
         JTextField tP = new JTextField(m ? a.getPassword() : "");
 
-        d.add(new JLabel("Nome:")); d.add(tN);
-        d.add(new JLabel("Cognome:")); d.add(tC);
-        d.add(new JLabel("Email:")); d.add(tE);
-        d.add(new JLabel("Password:")); d.add(tP);
+        d.add(new JLabel(LITERAL_NOME_DOUBLEPOINT)); d.add(tN);
+        d.add(new JLabel(LITERAL_COGNOME_DOUBLEPOINT)); d.add(tC);
+        d.add(new JLabel(LITERAL_EMAIL_DOUBLEPOINT)); d.add(tE);
+        d.add(new JLabel(LITERAL_PASSWORD_DOUBLEPOINT)); d.add(tP);
 
         JButton bS = new JButton(BTN_SALVA);
         d.add(bS);
@@ -1099,7 +1106,7 @@ public class MainGUI extends JFrame {
         JButton btnAssocia = new JButton("Associa");
         JButton btnRimuovi = new JButton("Scollega Selezionato");
 
-        topPanel.add(new JLabel("Medico:")); topPanel.add(cmbMedici);
+        topPanel.add(new JLabel(LITERAL_MEDICO_DOUBLEPOINT)); topPanel.add(cmbMedici);
         topPanel.add(new JLabel("Ricovero:")); topPanel.add(cmbRicoveri);
         topPanel.add(btnAssocia);
 
@@ -1166,7 +1173,7 @@ public class MainGUI extends JFrame {
         JButton btnAssocia = new JButton("Associa");
         JButton btnRimuovi = new JButton("Scollega Selezionato");
 
-        topPanel.add(new JLabel("Medico:")); topPanel.add(cmbMedici);
+        topPanel.add(new JLabel(LITERAL_MEDICO_DOUBLEPOINT)); topPanel.add(cmbMedici);
         topPanel.add(new JLabel("Intervento:")); topPanel.add(cmbInt);
         topPanel.add(new JLabel("Ruolo:")); topPanel.add(txtRuolo);
         topPanel.add(btnAssocia);

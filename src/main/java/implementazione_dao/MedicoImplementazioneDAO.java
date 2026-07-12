@@ -13,6 +13,8 @@ import java.util.List;
 public class MedicoImplementazioneDAO implements DAO {
     private final Connection connection;
 
+    private static final String ID_MEDICO_DB = "id_medico";
+
     public MedicoImplementazioneDAO() {
         try {
             connection = ConnessioneDatabase.getInstance().getConnection();
@@ -46,7 +48,7 @@ public class MedicoImplementazioneDAO implements DAO {
                         Medico m = new Medico(rs.getString("nome"), rs.getString("cognome"),
                                 rs.getString("email"), rs.getString("password"),
                                 rs.getString("tipo_medico"), guscioReparto);
-                        m.setIdMedico(rs.getInt("id_medico"));
+                        m.setIdMedico(rs.getInt(ID_MEDICO_DB));
                         lista.add(m);
                     } catch (BadArgsException e) { System.err.println(e.getMessage()); }
                 }
@@ -132,7 +134,7 @@ public class MedicoImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Gestisce g = new Gestisce();
-                g.setIdMedico(rs.getInt("id_medico"));
+                g.setIdMedico(rs.getInt(ID_MEDICO_DB));
                 g.setIdRicovero(rs.getInt("id_ricovero"));
                 collegamenti.add(g);
             }
@@ -147,7 +149,7 @@ public class MedicoImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Opera opera = new Opera();
-                opera.setIdMedico(rs.getInt("id_medico"));
+                opera.setIdMedico(rs.getInt(ID_MEDICO_DB));
                 opera.setIdIntervento(rs.getInt("id_intervento"));
                 opera.setRuolo(rs.getString("ruolo"));
                 collegamenti.add(opera);
@@ -162,7 +164,7 @@ public class MedicoImplementazioneDAO implements DAO {
             ps.setString(1, email);
             ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt("id_medico");
+                if (rs.next()) return rs.getInt(ID_MEDICO_DB);
             }
         }
         return -1;

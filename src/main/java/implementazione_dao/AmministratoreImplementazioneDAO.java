@@ -12,6 +12,13 @@ import java.util.List;
 public class AmministratoreImplementazioneDAO implements DAO {
     private static Connection connection;
 
+    private static final String ID_REPARTO_DB = "id_reparto";
+    private static final String COGNOME_DB = "cognome";
+    private static final String ID_MEDICO_DB = "id_medico";
+    private static final String DATA_ORA_FINE_DB = "data_ora_fine";
+    private static final String DATA_ORA_INIZIO_DB = "data_ora_inizio";
+    private static final String ID_RICOVERO_DB = "id_ricovero";
+
     public AmministratoreImplementazioneDAO() {
         try { connection = ConnessioneDatabase.getInstance().getConnection(); }
         catch (SQLException e) { throw new RuntimeException(e); }
@@ -30,7 +37,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
     public List<Reparto> getReparti(int id) throws SQLException {
         List<Reparto> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Reparto"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) { try { lista.add(new Reparto(rs.getString("nome_reparto"), rs.getInt("id_reparto"))); } catch (Exception e) {} }
+            while (rs.next()) { try { lista.add(new Reparto(rs.getString("nome_reparto"), rs.getInt(ID_REPARTO_DB))); } catch (Exception e) {} }
         } return lista;
     }
 
@@ -38,7 +45,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
     public List<Paziente> getPazienti(int id) throws SQLException {
         List<Paziente> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Paziente"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) { try { lista.add(new Paziente(rs.getString("nome"), rs.getString("cognome"), rs.getString("cod_fiscale"))); } catch (Exception e) {} }
+            while (rs.next()) { try { lista.add(new Paziente(rs.getString("nome"), rs.getString(COGNOME_DB), rs.getString("cod_fiscale"))); } catch (Exception e) {} }
         } return lista;
     }
 
@@ -48,8 +55,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Medico"); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    Medico m = new Medico(rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"), rs.getString("tipo_medico"), new Reparto(rs.getInt("id_reparto")));
-                    m.setIdMedico(rs.getInt("id_medico")); lista.add(m);
+                    Medico m = new Medico(rs.getString("nome"), rs.getString(COGNOME_DB), rs.getString("email"), rs.getString("password"), rs.getString("tipo_medico"), new Reparto(rs.getInt(ID_REPARTO_DB)));
+                    m.setIdMedico(rs.getInt(ID_MEDICO_DB)); lista.add(m);
                 } catch (Exception e) {}
             }
         } return lista;
@@ -60,7 +67,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
         List<Stanza> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Stanza"); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                try { Stanza s = new Stanza(new Reparto(rs.getInt("id_reparto"))); s.setIdStanza(rs.getInt("id_stanza")); lista.add(s); } catch (Exception e) {}
+                try { Stanza s = new Stanza(new Reparto(rs.getInt(ID_REPARTO_DB))); s.setIdStanza(rs.getInt("id_stanza")); lista.add(s); } catch (Exception e) {}
             }
         } return lista;
     }
@@ -81,8 +88,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Turno_Lavorativo"); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    TurnoLavorativo t = new TurnoLavorativo(rs.getObject("data_ora_inizio", LocalDateTime.class), rs.getObject("data_ora_fine", LocalDateTime.class));
-                    t.setIdTurno(rs.getInt("id_turno")); t.setMedico(new Medico(rs.getInt("id_medico"))); lista.add(t);
+                    TurnoLavorativo t = new TurnoLavorativo(rs.getObject(DATA_ORA_INIZIO_DB, LocalDateTime.class), rs.getObject(DATA_ORA_FINE_DB, LocalDateTime.class));
+                    t.setIdTurno(rs.getInt("id_turno")); t.setMedico(new Medico(rs.getInt(ID_MEDICO_DB))); lista.add(t);
                 } catch (Exception e) {}
             }
         } return lista;
@@ -92,8 +99,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
         List<Ricovero> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Ricovero"); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Ricovero r = new Ricovero(rs.getInt("id_ricovero"));
-                r.setDataOraInizio(rs.getObject("data_ora_inizio", LocalDateTime.class)); r.setDataOraFine(rs.getObject("data_ora_fine", LocalDateTime.class));
+                Ricovero r = new Ricovero(rs.getInt(ID_RICOVERO_DB));
+                r.setDataOraInizio(rs.getObject(DATA_ORA_INIZIO_DB, LocalDateTime.class)); r.setDataOraFine(rs.getObject(DATA_ORA_FINE_DB, LocalDateTime.class));
                 r.setPaziente(new Paziente(rs.getString("cod_fiscale_paziente"))); r.setLetto(new Letto(rs.getInt("id_letto"))); lista.add(r);
             }
         } return lista;
@@ -112,8 +119,8 @@ public class AmministratoreImplementazioneDAO implements DAO {
 
                     InterventoChirurgico i = new InterventoChirurgico(
                             rs.getString("nome_intervento"),
-                            rs.getObject("data_ora_inizio", LocalDateTime.class),
-                            rs.getObject("data_ora_fine", LocalDateTime.class),
+                            rs.getObject(DATA_ORA_INIZIO_DB, LocalDateTime.class),
+                            rs.getObject(DATA_ORA_FINE_DB, LocalDateTime.class),
                             v
                     );
                     i.setIdIntervento(rs.getInt("id_intervento"));
@@ -155,7 +162,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
             while (rs.next()) {
                 try {
 
-                    Visita v = new Visita(rs.getString("nome_visita"), new Ricovero(rs.getInt("id_ricovero")), new Medico(rs.getInt("id_medico")));
+                    Visita v = new Visita(rs.getString("nome_visita"), new Ricovero(rs.getInt(ID_RICOVERO_DB)), new Medico(rs.getInt(ID_MEDICO_DB)));
                     v.setIdVisita(rs.getInt("id_visita"));
                     lista.add(v);
                 } catch (Exception e) { System.err.println("Errore Visita: " + e.getMessage()); }
@@ -181,7 +188,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
         List<Amministratore> lista = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM Amministratore"); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                try { Amministratore a = new Amministratore(rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password")); a.setId(rs.getInt("id_amministratore")); lista.add(a); } catch (Exception e) {}
+                try { Amministratore a = new Amministratore(rs.getString("nome"), rs.getString(COGNOME_DB), rs.getString("email"), rs.getString("password")); a.setId(rs.getInt("id_amministratore")); lista.add(a); } catch (Exception e) {}
             }
         } return lista;
     }
@@ -190,14 +197,14 @@ public class AmministratoreImplementazioneDAO implements DAO {
     public List<Gestisce> getCollegamentiGestisce() throws SQLException {
         List<Gestisce> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT id_medico, id_ricovero FROM Gestisce"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) { Gestisce g = new Gestisce(); g.setIdMedico(rs.getInt("id_medico")); g.setIdRicovero(rs.getInt("id_ricovero")); list.add(g); }
+            while (rs.next()) { Gestisce g = new Gestisce(); g.setIdMedico(rs.getInt(ID_MEDICO_DB)); g.setIdRicovero(rs.getInt(ID_RICOVERO_DB)); list.add(g); }
         } return list;
     }
 
     public List<Opera> getCollegamentiOpera() throws SQLException {
         List<Opera> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT id_medico, id_intervento, ruolo FROM Opera"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) { Opera o = new Opera(); o.setIdMedico(rs.getInt("id_medico")); o.setIdIntervento(rs.getInt("id_intervento")); o.setRuolo(rs.getString("ruolo")); list.add(o); }
+            while (rs.next()) { Opera o = new Opera(); o.setIdMedico(rs.getInt(ID_MEDICO_DB)); o.setIdIntervento(rs.getInt("id_intervento")); o.setRuolo(rs.getString("ruolo")); list.add(o); }
         } return list;
     }
 
