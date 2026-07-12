@@ -12,12 +12,16 @@ public class ConnessioneDatabase {
     private static final String PASSWORD = "Fr4ncy_Napoli";
     private String driver = "org.postgresql.Driver";
 
+    public Connection connection = null;
 
-    private static Connection connection = null;
-
-    public static Connection getConnection() {
-        return connection;
+    public static ConnessioneDatabase getInstance() throws SQLException {
+        if (instance == null) {
+            instance = new ConnessioneDatabase();
+        } else if (instance.connection.isClosed()) {
+            instance = new ConnessioneDatabase();
+        } return instance;
     }
+
 
     private ConnessioneDatabase() throws SQLException {
         try {
@@ -29,10 +33,7 @@ public class ConnessioneDatabase {
         }
     }
 
-
-    public static ConnessioneDatabase getInstance() throws SQLException {
-        if(instance == null || connection.isClosed()) instance = new ConnessioneDatabase();
-
-        return instance;
+    public Connection getConnection() {
+        return connection;
     }
 }

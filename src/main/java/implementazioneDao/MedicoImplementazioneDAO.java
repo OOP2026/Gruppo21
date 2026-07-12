@@ -14,7 +14,11 @@ public class MedicoImplementazioneDAO implements DAO {
     private final Connection connection;
 
     public MedicoImplementazioneDAO() {
-        connection = ConnessioneDatabase.getConnection();
+        try {
+            connection = ConnessioneDatabase.getInstance().getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -27,6 +27,7 @@ public class Controller {
 
     private String utenteLoggatoRuolo = null;
     private int idUtenteLoggato = -1;
+    private DAO dao;
 
     public Controller() {
         svuotaMemoria();
