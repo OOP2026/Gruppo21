@@ -100,7 +100,7 @@ public class MedicoImplementazioneDAO implements DAO {
             while (rs.next()) {
                 Gestisce g = new Gestisce();
                 g.setId_medico(rs.getInt("id_medico"));
-                g.setId_ricovero(rs.getInt("id_ricovero"););
+                g.setId_ricovero(rs.getInt("id_ricovero"));
                 collegamenti.add(g);
             }
         }
@@ -108,16 +108,16 @@ public class MedicoImplementazioneDAO implements DAO {
     }
 
     @Override
-    public List<Object[]> getCollegamentiOpera() throws SQLException {
-        List<Object[]> collegamenti = new ArrayList<>();
+    public List<Opera> getCollegamentiOpera() throws SQLException {
+        List<Opera> collegamenti = new ArrayList<>();
         String sql = "SELECT id_medico, id_interventi, ruolo FROM Opera";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Object[] tripla = new Object[3];
-                tripla[0] = rs.getInt("id_medico");
-                tripla[1] = rs.getInt("id_interventi");
-                tripla[2] = rs.getString("ruolo");
-                collegamenti.add(tripla);
+                Opera opera = new Opera();
+                opera.setId_medico(rs.getInt("id_medico"));
+                opera.setId_intervento(rs.getInt("id_interventi"));
+                opera.setRuolo(rs.getString("ruolo"));
+                collegamenti.add(opera);
             }
         }
         return collegamenti;

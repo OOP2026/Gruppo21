@@ -67,9 +67,10 @@ public class Controller {
         this.turni = dao.getTurniLavorativi(idFiltro);
         this.ricoveri = dao.getRicoveri(idFiltro);
         this.letti = dao.getLetti(idFiltro);
-        this.visite = dao.getVisites(idFiltro);
+        this.visite = dao.getVisite(idFiltro);
         this.interventi = dao.getInterventi(idFiltro);
         this.gestisce = dao.getCollegamentiGestisce();
+        this.opera = dao.getCollegamentiOpera();
 
         for (Stanza s : stanze) {
             if (s.getReparto() != null) {
@@ -111,20 +112,19 @@ public class Controller {
             }
         }
 
-        for (int[] link : linksGestisce) {
-            Medico mReale = trovaMedicoPerId(link[0]);
-            Ricovero rReale = trovaRicoveroPerId(link[1]);
+        for (Gestisce link : gestisce) {
+            Medico mReale = trovaMedicoPerId(link.getId_medico());
+            Ricovero rReale = trovaRicoveroPerId(link.getId_ricovero());
             if (mReale != null && rReale != null) {
                 mReale.aggiungiRicovero(rReale);
                 rReale.aggiungiMedico(mReale);
             }
         }
 
-        List<Object[]> linksOpera = dao.getCollegamentiOpera();
-        for (Object[] link : linksOpera) {
-            Medico mReale = trovaMedicoPerId((Integer) link[0]);
-            InterventoChirurgico iReale = trovaInterventoPerId((Integer) link[1]);
-            String ruolo = (String) link[2];
+        for (Opera link : opera) {
+            Medico mReale = trovaMedicoPerId(link.getId_medico());
+            InterventoChirurgico iReale = trovaInterventoPerId(link.getId_intervento());
+            String ruolo = link.getRuolo();
             if (mReale != null && iReale != null) {
                 mReale.aggiungiIntervento(iReale);
                 iReale.aggiungiMedico(mReale); // Opzionale: passare anche il parametro ruolo se supportato
@@ -161,7 +161,6 @@ public class Controller {
 
     public boolean isAmministratore() { return "Amministratore".equals(utenteLoggatoRuolo); }
 
-    // --- INTERFACCIA PER LO STRATO DELLA VISTA (GETTER) ---
     public List<Reparto> getReparti() { return reparti; }
     public List<Paziente> getPazienti() { return pazienti; }
     public List<Medico> getMedici() { return medici; }

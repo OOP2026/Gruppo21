@@ -12,6 +12,7 @@ public class Medico extends UtenteRegistrato {
     private Reparto reparto;
     private List<Ricovero> ricoveri;
     private List<TurnoLavorativo> turniLavorativi;
+    private List<InterventoChirurgico> interventi;
     private Amministratore amministratoreDiRiferimento;
 
     public Medico(int idMedico) throws BadArgsException {
@@ -26,6 +27,7 @@ public class Medico extends UtenteRegistrato {
         this.reparto = reparto;
         this.ricoveri = new ArrayList<>();
         this.turniLavorativi = new ArrayList<>();
+        this.interventi = new ArrayList<>();
     }
 
     public Medico(String nome, String cognome, String email, String password, String tipoMedico, Reparto reparto) throws BadArgsException {
@@ -103,6 +105,18 @@ public class Medico extends UtenteRegistrato {
 
     public void setTipoMedico(String tipoMedico) {
         this.tipoMedico = tipoMedico;
+    }
+
+    public List<InterventoChirurgico> getInterventi() {
+        return interventi;
+    }
+
+    public void setInterventi(List<InterventoChirurgico> interventi) {
+        this.interventi = interventi;
+    }
+
+    public void aggiungiIntervento(InterventoChirurgico intervento) {
+        interventi.add(intervento);
     }
 
     @Override

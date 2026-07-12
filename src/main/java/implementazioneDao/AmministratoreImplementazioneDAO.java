@@ -29,10 +29,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
         }
     }
 
-    // =====================================================================
-    // ESTRAZIONE DELLE ENTITÀ PRINCIPALI (Gusci usati solo per 1:N)
-    // =====================================================================
-
     @Override
     public List<Reparto> getReparti(int id) throws SQLException {
         List<Reparto> lista = new ArrayList<>();
@@ -110,7 +106,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
                             rs.getObject("data_ora_inizio", LocalDateTime.class),
                             rs.getObject("data_ora_fine", LocalDateTime.class)
                     );
-                    // Passiamo il guscio del medico a cui appartiene il turno
                     t.setMedico(new Medico(rs.getInt("id_medico")));
                     lista.add(t);
                 } catch (BadArgsException e) { System.err.println("Errore Turno: " + e.getMessage()); }
@@ -129,7 +124,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
                     r.setDataOraInizio(rs.getObject("data_ora_inizio", LocalDateTime.class));
                     r.setDataOraFine(rs.getObject("data_ora_fine", LocalDateTime.class));
 
-                    // Gusci per Paziente e Letto
                     r.setPaziente(new Paziente(rs.getString("cod_fiscale_paziente")));
                     r.setLetto(new Letto(rs.getInt("id_letto"))); // Assicurati di avere questo guscio in Letto
 
@@ -163,7 +157,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Gestisce g = new Gestisce();
-                g.setId_medico(rs.getInt("id_medico"););
+                g.setId_medico(rs.getInt("id_medico"));
                 g.setId_ricovero(rs.getInt("id_ricovero"));
                 collegamenti.add(g);
             }
@@ -181,7 +175,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
                 Opera opera = new Opera();
                 opera.setId_medico(rs.getInt("id_medico"));       // Intero
                 opera.setId_intervento(rs.getInt("id_intervento"));   // Intero
-                opera.setRuolo(rs.getString("ruolo"););        // Stringa (es. "Primo Chirurgo")
+                opera.setRuolo(rs.getString("ruolo"));        // Stringa (es. "Primo Chirurgo")
                 collegamenti.add(opera);
             }
         }
