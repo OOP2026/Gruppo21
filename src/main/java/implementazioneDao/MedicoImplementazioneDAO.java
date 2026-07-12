@@ -13,11 +13,7 @@ import java.util.List;
 public class MedicoImplementazioneDAO implements DAO {
     private final Connection connection;
 
-    // Memoria locale del Medico loggato
-    private List<Medico> mediciCorrenti = new ArrayList<>();
-    private List<Visita> visiteCorrenti = new ArrayList<>();
-
-    public MedicoImplementazioneDAO() throws SQLException {
+    public MedicoImplementazioneDAO() {
         connection = ConnessioneDatabase.getConnection();
     }
 
@@ -34,123 +30,106 @@ public class MedicoImplementazioneDAO implements DAO {
     }
 
     @Override
-    public void istanziaMemoriaLocale(int idMedico) throws SQLException {
-        // 1. Svuotiamo la memoria precedente (fondamentale per evitare duplicati se chiamato due volte)
-        this.mediciCorrenti.clear();
-        this.visiteCorrenti.clear();
-
-        // 2. Carichiamo l'entità principale (Il Medico)
-        String sqlMedico = "SELECT * FROM Medico WHERE id_medico = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sqlMedico)) {
+    public List<Medico> getMedici(int idMedico) throws SQLException {
+        List<Medico> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Medico WHERE id_medico = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, idMedico);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     try {
-                        // Creiamo il Medico con i dati reali del DB
-                        Medico m = new Medico(
-                                rs.getString("nome"), rs.getString("cognome"),
+                        Reparto guscioReparto = new Reparto(rs.getInt("id_reparto"));
+                        Medico m = new Medico(rs.getString("nome"), rs.getString("cognome"),
                                 rs.getString("email"), rs.getString("password"),
-                                rs.getString("tipo_medico"), null
-                        );
+                                rs.getString("tipo_medico"), guscioReparto);
                         m.setIdMedico(rs.getInt("id_medico"));
-
-                        // 3. RIEMPIMENTO ARRAYLIST: Lanciamo la query per i Turni passando la FK
-                        List<TurnoLavorativo> suoiTurni = fetchTurniPerMedico(idMedico);
-                        // Assicurati di avere il metodo setTurniLavorativi(List<TurnoLavorativo> turni) nella classe Medico
-                        m.setTurniLavorativi(suoiTurni);
-
-                        this.mediciCorrenti.add(m);
-                    } catch (BadArgsException e) {
-                        System.err.println("Errore istanziazione Medico: " + e.getMessage());
-                    }
-                }
-            }
-        }
-
-        // 4. Carichiamo le liste indipendenti (es. le visite fatte da questo medico)
-        this.visiteCorrenti = fetchVisitePerMedico(idMedico);
-
-        System.out.println("Memoria sincronizzata con successo per il Medico ID: " + idMedico);
-    }
-
-    // --- METODI PRIVATI PER LE QUERY TRAMITE FOREIGN KEY ---
-
-    private List<TurnoLavorativo> fetchTurniPerMedico(int idMedicoFk) throws SQLException {
-        List<TurnoLavorativo> lista = new ArrayList<>();
-        // Query strettamente legata alla chiave esterna
-        String sql = "SELECT * FROM Turno_Lavorativo WHERE id_medico = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, idMedicoFk);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    try {
-                        lista.add(new TurnoLavorativo(
-                                rs.getObject("data_ora_inizio", LocalDateTime.class),
-                                rs.getObject("data_ora_fine", LocalDateTime.class)
-                        ));
-                    } catch (BadArgsException e) {
-                        System.err.println("Dati Turno corrotti nel DB: " + e.getMessage());
-                    }
+                        lista.add(m);
+                    } catch (BadArgsException e) { System.err.println(e.getMessage()); }
                 }
             }
         }
         return lista;
     }
 
-    private List<Visita> fetchVisitePerMedico(int idMedicoFk) throws SQLException {
+    @Override
+    public List<Visita> getVisite(int idMedico) throws SQLException {
         List<Visita> lista = new ArrayList<>();
-        // Query strettamente legata alla chiave esterna
         String sql = "SELECT * FROM Visita WHERE id_medico = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, idMedicoFk);
+            ps.setInt(1, idMedico);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     try {
-                        lista.add(new Visita(
-                                rs.getString("nome_visita"),
-                                new Ricovero(rs.getInt("id_ricovero")), // Guscio FK
-                                new Medico(idMedicoFk) // Guscio FK
-                        ));
-                    } catch (BadArgsException e) {
-                        System.err.println("Dati Visita corrotti nel DB: " + e.getMessage());
-                    }
+                        lista.add(new Visita(rs.getString("nome_visita"),
+                                new Ricovero(rs.getInt("id_ricovero")),
+                                new Medico(idMedico)));
+                    } catch (BadArgsException e) { System.err.println(e.getMessage()); }
                 }
             }
         }
         return lista;
     }
 
-    // --- GETTER CHE RESTITUISCONO LA MEMORIA GIÀ COMPILATA AL CONTROLLER ---
-
     @Override
-    public List<Medico> getMedici(int id) {
-        return this.mediciCorrenti;
-    }
-
-    @Override
-    public List<Visita> getVisite(int id) {
-        return this.visiteCorrenti;
-    }
-
-    @Override
-    public List<Ricovero> getRicoveri(int i) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<TurnoLavorativo> getTurniLavorativi(int id) {
-        // Se il controller chiede i turni, li peschiamo direttamente dall'oggetto Medico caricato
-        if (!this.mediciCorrenti.isEmpty()) {
-            return this.mediciCorrenti.get(0).getTurniLavorativi();
+    public List<TurnoLavorativo> getTurniLavorativi(int idMedico) throws SQLException {
+        List<TurnoLavorativo> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Turno_Lavorativo WHERE id_medico = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idMedico);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    try {
+                        TurnoLavorativo t = new TurnoLavorativo(
+                                rs.getObject("data_ora_inizio", LocalDateTime.class),
+                                rs.getObject("data_ora_fine", LocalDateTime.class)
+                        );
+                        t.setMedico(new Medico(idMedico));
+                        lista.add(t);
+                    } catch (BadArgsException e) { System.err.println(e.getMessage()); }
+                }
+            }
         }
-        return new ArrayList<>();
+        return lista;
     }
 
-    // Metodi negati per i permessi del Medico
-    @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
-    @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
-    @Override public List<Stanza> getStanze(int id) { return new ArrayList<>(); }
-    @Override public List<Stanza> getStanzePerReparto(int id, Reparto r) { return new ArrayList<>(); }
+    @Override
+    public List<int[]> getCollegamentiGestisce() throws SQLException {
+        List<int[]> collegamenti = new ArrayList<>();
+        String sql = "SELECT id_medico, id_ricovero FROM Gestisce";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int[] coppia = new int[2];
+                coppia[0] = rs.getInt("id_medico");
+                coppia[1] = rs.getInt("id_ricovero");
+                collegamenti.add(coppia);
+            }
+        }
+        return collegamenti;
+    }
+
+    @Override
+    public List<Object[]> getCollegamentiOpera() throws SQLException {
+        List<Object[]> collegamenti = new ArrayList<>();
+        String sql = "SELECT id_medico, id_interventi, ruolo FROM Opera";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Object[] tripla = new Object[3];
+                tripla[0] = rs.getInt("id_medico");
+                tripla[1] = rs.getInt("id_interventi");
+                tripla[2] = rs.getString("ruolo");
+                collegamenti.add(tripla);
+            }
+        }
+        return collegamenti;
+    }
+
+    // Il medico di base non legge dati globali o amministrativi non di sua competenza
     @Override public List<Reparto> getReparti(int id) { return new ArrayList<>(); }
     @Override public List<Paziente> getPazienti(int id) { return new ArrayList<>(); }
+    @Override public List<Stanza> getStanze(int id) { return new ArrayList<>(); }
+    @Override public List<Ricovero> getRicoveri(int id) { return new ArrayList<>(); }
+    @Override public List<InterventoChirurgico> getInterventi(int id) { return new ArrayList<>(); }
+    @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
+    @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
+    @Override public List<Stanza> getStanzePerReparto(int id, Reparto r) { return new ArrayList<>(); }
 }
