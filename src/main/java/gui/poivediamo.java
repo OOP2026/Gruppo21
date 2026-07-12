@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 public class poivediamo extends JFrame {
 
+    /*
     private Controller controller;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -173,4 +174,5 @@ public class poivediamo extends JFrame {
         tabbedPane.addTab("Ricoveri e Turni", panelOperazioni);
         add(tabbedPane);
     }
+     */
 }

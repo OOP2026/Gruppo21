@@ -23,7 +23,7 @@ public class GUI_Stanza {
             try {
                 Reparto selezionato = (Reparto) comboReparto.getSelectedItem();
                 if (selezionato != null) {
-                    controller.aggiungiStanza(selezionato);
+                    //controller.aggiungiStanza(selezionato);
                     JOptionPane.showMessageDialog(null, "Stanza aggiunta!");
                 }
             } catch (Exception ex) {

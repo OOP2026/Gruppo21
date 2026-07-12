@@ -31,11 +31,7 @@ public class Registrazione {
         //Viene salvata come "[PASSWORD]", ove PASSWORD è cio' che inserisce l'utente.
 
         if (selezione) {
-            try {
-                controller.aggiungiAmministratoreAnonimo(email, password);
-            } catch (BadArgsException e) {
-                //...
-            }
+            controller.aggiungiAmministratoreAnonimo(email, password);
             chiamaGUIAmministratore(controller);
         }
         else {}//aggiungiMedico con altri reparti vari

@@ -15,8 +15,8 @@ public class GUI_Letto {
     public GUI_Letto(Controller controller) {
         this.controller = controller;
 
-        if (controller.getTutteStanze() != null) {
-            for (Stanza s : controller.getTutteStanze()) {
+        if (controller.getStanze() != null) {
+            for (Stanza s : controller.getStanze()) {
                 comboStanza.addItem(s);
             }
         }
@@ -25,7 +25,7 @@ public class GUI_Letto {
             try {
                 Stanza selezionata = (Stanza) comboStanza.getSelectedItem();
                 if (selezionata != null) {
-                    controller.aggiungiLetto(txtCodice.getText(), selezionata);
+                    controller.aggiungiLetto(selezionata);
                     JOptionPane.showMessageDialog(null, "Letto salvato!");
                 }
             } catch (Exception ex) {

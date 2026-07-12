@@ -40,11 +40,6 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        try {
-            controller = new Controller();
-        } catch (BadArgsException e) {
-            System.err.println("Errore di Controller - Inizializzazione fallita.");
-            System.exit(1);
-        }
+        controller = new Controller();
     }
 }

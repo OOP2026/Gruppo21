@@ -26,6 +26,13 @@ public class Letto {
         this.ricoveri = new ArrayList<>();
     }
 
+    public Letto(Stanza stanza) throws BadArgsException {
+        if(stanza==null) throw new BadArgsException("La classe Letto ha degli attributi NULLI.");
+
+        this.stanza = stanza;
+        this.ricoveri = new ArrayList<>();
+    }
+
     public void aggiungiRicovero(Ricovero ricovero) {
         ricoveri.add(ricovero);
     }

@@ -25,7 +25,7 @@ public class GUI_TurnoLavorativo {
             try {
                 LocalDateTime inizio = LocalDateTime.parse(txtInizio.getText(), formatter);
                 LocalDateTime fine = LocalDateTime.parse(txtFine.getText(), formatter);
-                controller.aggiungiTurnoLavorativo(inizio, fine);
+                //controller.aggiungiTurnoLavorativo(inizio, fine);
                 JOptionPane.showMessageDialog(null, "Turno salvato!");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Errore: " + ex.getMessage());

@@ -1,11 +1,13 @@
 package controller;
 
+import exceptions.BadArgsException;
 import implementazioneDao.AmministratoreImplementazioneDAO;
 import implementazioneDao.MedicoImplementazioneDAO;
 import dao.DAO;
 import model.*;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +55,6 @@ public class Controller {
         if (!medicoDao.verificaCredenziali(email, password)) return false;
 
         this.utenteLoggatoRuolo = "Medico";
-        this.idUtenteLoggato = idMedico;
         svuotaMemoria();
         scaricaEOrchestraTabelle(medicoDao, idMedico);
         return true;
@@ -134,6 +135,8 @@ public class Controller {
         System.out.println("Orchestrazione completata con successo mediante strutture gerarchiche.");
     }
 
+    //Cicli For filtrati per ID
+
     private Reparto trovaRepartoPerId(int id) {
         for (Reparto r : reparti) { if (r.getId() == id) return r; }
         return null;
@@ -161,12 +164,150 @@ public class Controller {
 
     public boolean isAmministratore() { return "Amministratore".equals(utenteLoggatoRuolo); }
 
-    public List<Reparto> getReparti() { return reparti; }
-    public List<Paziente> getPazienti() { return pazienti; }
-    public List<Medico> getMedici() { return medici; }
-    public List<Stanza> getStanze() { return stanze; }
-    public List<Ricovero> getRicoveri() { return ricoveri; }
-    public List<TurnoLavorativo> getTurni() { return turni; }
-    public List<Visita> getVisite() { return visite; }
-    public List<InterventoChirurgico> getInterventi() { return interventi; }
+    //Getter e setter
+
+    public List<Medico> getMedici() {
+        return medici;
+    }
+
+    public void setMedici(List<Medico> medici) {
+        this.medici = medici;
+    }
+
+    public List<Ricovero> getRicoveri() {
+        return ricoveri;
+    }
+
+    public void setRicoveri(List<Ricovero> ricoveri) {
+        this.ricoveri = ricoveri;
+    }
+
+    public List<Amministratore> getAmministratori() {
+        return amministratori;
+    }
+
+    public void setAmministratori(List<Amministratore> amministratori) {
+        this.amministratori = amministratori;
+    }
+
+    public List<Paziente> getPazienti() {
+        return pazienti;
+    }
+
+    public void setPazienti(List<Paziente> pazienti) {
+        this.pazienti = pazienti;
+    }
+
+    public List<Reparto> getReparti() {
+        return reparti;
+    }
+
+    public void setReparti(List<Reparto> reparti) {
+        this.reparti = reparti;
+    }
+
+    public List<Stanza> getStanze() {
+        return stanze;
+    }
+
+    public void setStanze(List<Stanza> stanze) {
+        this.stanze = stanze;
+    }
+
+    public List<Letto> getLetti() {
+        return letti;
+    }
+
+    public void setLetti(List<Letto> letti) {
+        this.letti = letti;
+    }
+
+    public List<TurnoLavorativo> getTurni() {
+        return turni;
+    }
+
+    public void setTurni(List<TurnoLavorativo> turni) {
+        this.turni = turni;
+    }
+
+    public List<Visita> getVisite() {
+        return visite;
+    }
+
+    public void setVisite(List<Visita> visite) {
+        this.visite = visite;
+    }
+
+    public List<InterventoChirurgico> getInterventi() {
+        return interventi;
+    }
+
+    public void setInterventi(List<InterventoChirurgico> interventi) {
+        this.interventi = interventi;
+    }
+
+    public List<Gestisce> getGestisce() {
+        return gestisce;
+    }
+
+    public void setGestisce(List<Gestisce> gestisce) {
+        this.gestisce = gestisce;
+    }
+
+    public List<Opera> getOpera() {
+        return opera;
+    }
+
+    public void setOpera(List<Opera> opera) {
+        this.opera = opera;
+    }
+
+    public String getUtenteLoggatoRuolo() {
+        return utenteLoggatoRuolo;
+    }
+
+    public void setUtenteLoggatoRuolo(String utenteLoggatoRuolo) {
+        this.utenteLoggatoRuolo = utenteLoggatoRuolo;
+    }
+
+    public int getIdUtenteLoggato() {
+        return idUtenteLoggato;
+    }
+
+    public void setIdUtenteLoggato(int idUtenteLoggato) {
+        this.idUtenteLoggato = idUtenteLoggato;
+    }
+
+    //Adder
+    public void aggiungiRicovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) {
+        try {
+            Ricovero r = new Ricovero(paziente, letto, dataOraInizio, dataOraFine);
+        } catch (BadArgsException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void aggiungiPaziente(String nome, String cognome, String COD_Fiscale) {
+        try {
+            Paziente p = new Paziente(nome, cognome, COD_Fiscale);
+        } catch (BadArgsException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void aggiungiAmministratoreAnonimo(String email, String password) {
+        try {
+            Amministratore a = new Amministratore(email, password);
+        } catch (BadArgsException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void aggiungiLetto(Stanza selezionata) {
+        try {
+            Letto l = new Letto(selezionata);
+        } catch (BadArgsException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

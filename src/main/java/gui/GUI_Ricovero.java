@@ -26,8 +26,8 @@ public class GUI_Ricovero {
         if (controller.getPazienti() != null) {
             for (Paziente p : controller.getPazienti()) comboPaziente.addItem(p);
         }
-        if (controller.getTuttiLetti() != null) {
-            for (Letto l : controller.getTuttiLetti()) comboLetto.addItem(l);
+        if (controller.getLetti() != null) {
+            for (Letto l : controller.getLetti()) comboLetto.addItem(l);
         }
 
         btnSalva.addActionListener(e -> {

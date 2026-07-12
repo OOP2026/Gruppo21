@@ -45,7 +45,7 @@ public class Login {
                 try {
                     boolean accessoRiuscito = selezione ?
                             controller.loginAmministratore(email, password) :
-                            controller.loginMedico(email, password);
+                            controller.loginMedico(email, password, 0);
 
                     if (accessoRiuscito) {
                         JOptionPane.showMessageDialog(frame, "Accesso eseguito con successo!");
