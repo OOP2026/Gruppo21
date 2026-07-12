@@ -218,8 +218,8 @@ public class MainGUI extends JFrame {
         if (m != null && m.getRicoveri() != null) {
             for (Ricovero r : m.getRicoveri()) {
                 if (r.getPaziente() != null) {
-                    String letto = r.getLetto() != null ? String.valueOf(r.getLetto().getId_letto()) : "N/D";
-                    tm.addRow(new Object[]{r.getPaziente().getCOD_FISCALE(), r.getPaziente().getNome(), r.getPaziente().getCognome(), letto});
+                    String letto = r.getLetto() != null ? String.valueOf(r.getLetto().getIdLetto()) : "N/D";
+                    tm.addRow(new Object[]{r.getPaziente().getCodFiscale(), r.getPaziente().getNome(), r.getPaziente().getCognome(), letto});
                 }
             }
         }
@@ -273,7 +273,7 @@ public class MainGUI extends JFrame {
         DefaultTableModel tm = new DefaultTableModel(new String[]{"Cod Fiscale", "Nome", "Cognome"}, 0);
         JTable table = new JTable(tm);
         for (Paziente p : controller.getPazienti()) {
-            tm.addRow(new Object[]{p.getCOD_FISCALE(), p.getNome(), p.getCognome()});
+            tm.addRow(new Object[]{p.getCodFiscale(), p.getNome(), p.getCognome()});
         }
 
         JPanel p = new JPanel(new BorderLayout());
@@ -324,7 +324,7 @@ public class MainGUI extends JFrame {
 
         JTextField tN = new JTextField(m ? p.getNome() : "");
         JTextField tC = new JTextField(m ? p.getCognome() : "");
-        JTextField tCF = new JTextField(m ? p.getCOD_FISCALE() : "");
+        JTextField tCF = new JTextField(m ? p.getCodFiscale() : "");
         if (m) tCF.setEditable(false);
 
         d.add(new JLabel("Nome:"));
@@ -625,7 +625,7 @@ public class MainGUI extends JFrame {
         JTable table = new JTable(tm);
         for (Letto l : controller.getLetti()) {
             String stanza = l.getStanza() != null ? l.getStanza().toString() : "";
-            tm.addRow(new Object[]{l.getId_letto(), stanza});
+            tm.addRow(new Object[]{l.getIdLetto(), stanza});
         }
 
         JPanel p = new JPanel(new BorderLayout());
@@ -685,7 +685,7 @@ public class MainGUI extends JFrame {
         d.add(bS);
         bS.addActionListener(e -> {
             try {
-                controller.salvaLetto(m ? l.getId_letto() : -1, (Stanza) cS.getSelectedItem(), m);
+                controller.salvaLetto(m ? l.getIdLetto() : -1, (Stanza) cS.getSelectedItem(), m);
                 d.dispose();
                 rinfrescaDashboard();
             } catch (Exception ex) {
@@ -811,8 +811,8 @@ public class MainGUI extends JFrame {
         DefaultTableModel tm = new DefaultTableModel(new String[]{"ID", "Paziente", "Letto", "Inizio", "Fine"}, 0);
         JTable table = new JTable(tm);
         for (Ricovero r : controller.getRicoveri()) {
-            String paziente = r.getPaziente() != null ? r.getPaziente().getCOD_FISCALE() : "";
-            String letto = r.getLetto() != null ? String.valueOf(r.getLetto().getId_letto()) : "";
+            String paziente = r.getPaziente() != null ? r.getPaziente().getCodFiscale() : "";
+            String letto = r.getLetto() != null ? String.valueOf(r.getLetto().getIdLetto()) : "";
             tm.addRow(new Object[]{r.getIdRicovero(), paziente, letto, r.getDataOraInizio(), r.getDataOraFine()});
         }
 
@@ -861,7 +861,7 @@ public class MainGUI extends JFrame {
         JComboBox<Paziente> cP = new JComboBox<>();
         for (Paziente p : controller.getPazienti()) {
             cP.addItem(p);
-            if (m && r.getPaziente() != null && p.getCOD_FISCALE().equals(r.getPaziente().getCOD_FISCALE())) {
+            if (m && r.getPaziente() != null && p.getCodFiscale().equals(r.getPaziente().getCodFiscale())) {
                 cP.setSelectedItem(p);
             }
         }
@@ -869,7 +869,7 @@ public class MainGUI extends JFrame {
         JComboBox<Letto> cL = new JComboBox<>();
         for (Letto l : controller.getLetti()) {
             cL.addItem(l);
-            if (m && r.getLetto() != null && l.getId_letto() == r.getLetto().getId_letto()) {
+            if (m && r.getLetto() != null && l.getIdLetto() == r.getLetto().getIdLetto()) {
                 cL.setSelectedItem(l);
             }
         }
@@ -1078,14 +1078,14 @@ public class MainGUI extends JFrame {
             Medico m = null;
             Ricovero r = null;
             for (Medico med : controller.getMedici()) {
-                if (med.getIdMedico() == g.getId_medico()) m = med;
+                if (med.getIdMedico() == g.getIdMedico()) m = med;
             }
             for (Ricovero ric : controller.getRicoveri()) {
-                if (ric.getIdRicovero() == g.getId_ricovero()) r = ric;
+                if (ric.getIdRicovero() == g.getIdRicovero()) r = ric;
             }
             String mNome = m != null ? m.getNome() + " " + m.getCognome() : "Sconosciuto";
-            String rNome = r != null && r.getPaziente() != null ? r.getPaziente().getCOD_FISCALE() : "Sconosciuto";
-            tModel.addRow(new Object[]{g.getId_medico(), mNome, g.getId_ricovero(), rNome});
+            String rNome = r != null && r.getPaziente() != null ? r.getPaziente().getCodFiscale() : "Sconosciuto";
+            tModel.addRow(new Object[]{g.getIdMedico(), mNome, g.getIdRicovero(), rNome});
         }
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -1143,14 +1143,14 @@ public class MainGUI extends JFrame {
             Medico m = null;
             InterventoChirurgico ic = null;
             for (Medico med : controller.getMedici()) {
-                if (med.getIdMedico() == o.getId_medico()) m = med;
+                if (med.getIdMedico() == o.getIdMedico()) m = med;
             }
             for (InterventoChirurgico i : controller.getInterventi()) {
-                if (i.getIdIntervento() == o.getId_intervento()) ic = i;
+                if (i.getIdIntervento() == o.getIdIntervento()) ic = i;
             }
             String mNome = m != null ? m.getNome() + " " + m.getCognome() : "N/D";
             String iNome = ic != null ? ic.getNomeIntervento() : "N/D";
-            tModel.addRow(new Object[]{o.getId_medico(), mNome, o.getId_intervento(), iNome, o.getRuolo()});
+            tModel.addRow(new Object[]{o.getIdMedico(), mNome, o.getIdIntervento(), iNome, o.getRuolo()});
         }
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
 

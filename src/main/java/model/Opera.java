@@ -1,16 +1,16 @@
 package model;
 
 public class Opera {
-    private int id_medico;
-    private int id_intervento;
+    private int idMedico;
+    private int idIntervento;
     private String ruolo;
 
-    public int getId_medico() {
-        return id_medico;
+    public int getIdMedico() {
+        return idMedico;
     }
 
-    public void setId_medico(int id_medico) {
-        this.id_medico = id_medico;
+    public void setIdMedico(int idMedico) {
+        this.idMedico = idMedico;
     }
 
     public String getRuolo() {
@@ -21,11 +21,11 @@ public class Opera {
         this.ruolo = ruolo;
     }
 
-    public int getId_intervento() {
-        return id_intervento;
+    public int getIdIntervento() {
+        return idIntervento;
     }
 
-    public void setId_intervento(int id_intervento) {
-        this.id_intervento = id_intervento;
+    public void setIdIntervento(int idIntervento) {
+        this.idIntervento = idIntervento;
     }
 }

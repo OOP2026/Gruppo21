@@ -1,4 +1,4 @@
-package implementazioneDao;
+package implementazione_dao;
 
 import dao.DAO;
 import database_connection.ConnessioneDatabase;
@@ -132,8 +132,8 @@ public class MedicoImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Gestisce g = new Gestisce();
-                g.setId_medico(rs.getInt("id_medico"));
-                g.setId_ricovero(rs.getInt("id_ricovero"));
+                g.setIdMedico(rs.getInt("id_medico"));
+                g.setIdRicovero(rs.getInt("id_ricovero"));
                 collegamenti.add(g);
             }
         }
@@ -147,8 +147,8 @@ public class MedicoImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Opera opera = new Opera();
-                opera.setId_medico(rs.getInt("id_medico"));
-                opera.setId_intervento(rs.getInt("id_intervento"));
+                opera.setIdMedico(rs.getInt("id_medico"));
+                opera.setIdIntervento(rs.getInt("id_intervento"));
                 opera.setRuolo(rs.getString("ruolo"));
                 collegamenti.add(opera);
             }

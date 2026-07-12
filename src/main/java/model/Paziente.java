@@ -9,21 +9,21 @@ public class Paziente {
 
     private String nome;
     private String cognome;
-    private String COD_FISCALE; // Questa è la Primary Key nel Database
+    private String codFiscale; // Questa è la Primary Key nel Database
     private List<Ricovero> ricoveri;
 
 
-    public Paziente(String COD_FISCALE) {
-        this.COD_FISCALE = COD_FISCALE;
+    public Paziente(String codFiscale) {
+        this.codFiscale = codFiscale;
         this.ricoveri = new ArrayList<>();
     }
 
 
-    public Paziente(String nome, String cognome, String COD_FISCALE) throws BadArgsException {
-        if(COD_FISCALE == null) throw new BadArgsException("La classe Paziente ha degli attributi NULLI.");
-        if(COD_FISCALE.isEmpty()) throw new BadArgsException("La classe Paziente ha degli attributi VUOTI.");
+    public Paziente(String nome, String cognome, String codFiscale) throws BadArgsException {
+        if(codFiscale == null) throw new BadArgsException("La classe Paziente ha degli attributi NULLI.");
+        if(codFiscale.isEmpty()) throw new BadArgsException("La classe Paziente ha degli attributi VUOTI.");
 
-        this.COD_FISCALE = COD_FISCALE;
+        this.codFiscale = codFiscale;
         this.ricoveri = new ArrayList<>();
         this.nome = nome;
         this.cognome = cognome;
@@ -49,12 +49,12 @@ public class Paziente {
         this.cognome = cognome;
     }
 
-    public String getCOD_FISCALE() {
-        return COD_FISCALE;
+    public String getCodFiscale() {
+        return codFiscale;
     }
 
-    public void setCOD_FISCALE(String COD_FISCALE) {
-        this.COD_FISCALE = COD_FISCALE;
+    public void setCodFiscale(String codFiscale) {
+        this.codFiscale = codFiscale;
     }
 
     public List<Ricovero> getRicoveri() {
@@ -69,9 +69,9 @@ public class Paziente {
     public String toString() {
 
         if (nome != null && cognome != null) {
-            return nome + " " + cognome + " - CF: " + COD_FISCALE;
+            return nome + " " + cognome + " - CF: " + codFiscale;
         }
 
-        return "Paziente CF: " + COD_FISCALE;
+        return "Paziente CF: " + codFiscale;
     }
 }

@@ -1,7 +1,7 @@
 package controller;
 
-import implementazioneDao.AmministratoreImplementazioneDAO;
-import implementazioneDao.MedicoImplementazioneDAO;
+import implementazione_dao.AmministratoreImplementazioneDAO;
+import implementazione_dao.MedicoImplementazioneDAO;
 import dao.DAO;
 import model.*;
 
@@ -133,14 +133,14 @@ public class Controller {
 
         for (Ricovero r : ricoveri) {
             if (r.getPaziente() != null) {
-                Paziente pReale = trovaPazientePerCodFiscale(r.getPaziente().getCOD_FISCALE());
+                Paziente pReale = trovaPazientePerCodFiscale(r.getPaziente().getCodFiscale());
                 if (pReale != null) {
                     r.setPaziente(pReale);
                     pReale.aggiungiRicovero(r);
                 }
             }
             if (r.getLetto() != null) {
-                Letto lReale = trovaLettoPerId(r.getLetto().getId_letto());
+                Letto lReale = trovaLettoPerId(r.getLetto().getIdLetto());
                 if (lReale != null) {
                     r.setLetto(lReale);
                     lReale.aggiungiRicovero(r);
@@ -159,8 +159,8 @@ public class Controller {
         }
 
         for (Gestisce link : gestisce) {
-            Medico mReale = trovaMedicoPerId(link.getId_medico());
-            Ricovero rReale = trovaRicoveroPerId(link.getId_ricovero());
+            Medico mReale = trovaMedicoPerId(link.getIdMedico());
+            Ricovero rReale = trovaRicoveroPerId(link.getIdRicovero());
             if (mReale != null && rReale != null) {
                 mReale.aggiungiRicovero(rReale);
                 rReale.aggiungiMedico(mReale);
@@ -168,8 +168,8 @@ public class Controller {
         }
 
         for (Opera link : opera) {
-            Medico mReale = trovaMedicoPerId(link.getId_medico());
-            InterventoChirurgico iReale = trovaInterventoPerId(link.getId_intervento());
+            Medico mReale = trovaMedicoPerId(link.getIdMedico());
+            InterventoChirurgico iReale = trovaInterventoPerId(link.getIdIntervento());
             if (mReale != null && iReale != null) {
                 mReale.aggiungiIntervento(iReale);
                 iReale.aggiungiMedico(mReale);
@@ -193,7 +193,7 @@ public class Controller {
 
     private Paziente trovaPazientePerCodFiscale(String cf) {
         for (Paziente p : pazienti) {
-            if (p.getCOD_FISCALE().equals(cf)) return p;
+            if (p.getCodFiscale().equals(cf)) return p;
         }
         return null;
     }
@@ -214,7 +214,7 @@ public class Controller {
 
     private Letto trovaLettoPerId(int id) {
         for (Letto l : letti) {
-            if (l.getId_letto() == id) return l;
+            if (l.getIdLetto() == id) return l;
         }
         return null;
     }
@@ -368,9 +368,9 @@ public class Controller {
 
         AmministratoreImplementazioneDAO dao = new AmministratoreImplementazioneDAO();
         if (isModifica) {
-            dao.aggiornaRicovero(r, p.getCOD_FISCALE(), l.getId_letto());
+            dao.aggiornaRicovero(r, p.getCodFiscale(), l.getIdLetto());
         } else {
-            dao.inserisciRicovero(r, p.getCOD_FISCALE(), l.getId_letto());
+            dao.inserisciRicovero(r, p.getCodFiscale(), l.getIdLetto());
         }
         scaricaEOrchestraTabelle(dao, 0);
     }

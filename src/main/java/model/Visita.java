@@ -42,7 +42,7 @@ public class Visita {
 
     @Override
     public String toString() {
-        String pNome = (ricovero != null && ricovero.getPaziente() != null) ? ricovero.getPaziente().getCOD_FISCALE() : "Sconosciuto";
+        String pNome = (ricovero != null && ricovero.getPaziente() != null) ? ricovero.getPaziente().getCodFiscale() : "Sconosciuto";
         return idVisita + " - " + nomeVisita + " (Paziente: " + pNome + ")";
     }
 }

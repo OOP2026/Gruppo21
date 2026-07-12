@@ -1,8 +1,7 @@
-package implementazioneDao;
+package implementazione_dao;
 
 import dao.DAO;
 import database_connection.ConnessioneDatabase;
-import exceptions.BadArgsException;
 import model.*;
 
 import java.sql.*;
@@ -26,9 +25,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
             try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
         }
     }
-
-
-
 
     @Override
     public List<Reparto> getReparti(int id) throws SQLException {
@@ -194,14 +190,14 @@ public class AmministratoreImplementazioneDAO implements DAO {
     public List<Gestisce> getCollegamentiGestisce() throws SQLException {
         List<Gestisce> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT id_medico, id_ricovero FROM Gestisce"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) { Gestisce g = new Gestisce(); g.setId_medico(rs.getInt("id_medico")); g.setId_ricovero(rs.getInt("id_ricovero")); list.add(g); }
+            while (rs.next()) { Gestisce g = new Gestisce(); g.setIdMedico(rs.getInt("id_medico")); g.setIdRicovero(rs.getInt("id_ricovero")); list.add(g); }
         } return list;
     }
 
     public List<Opera> getCollegamentiOpera() throws SQLException {
         List<Opera> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement("SELECT id_medico, id_intervento, ruolo FROM Opera"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) { Opera o = new Opera(); o.setId_medico(rs.getInt("id_medico")); o.setId_intervento(rs.getInt("id_intervento")); o.setRuolo(rs.getString("ruolo")); list.add(o); }
+            while (rs.next()) { Opera o = new Opera(); o.setIdMedico(rs.getInt("id_medico")); o.setIdIntervento(rs.getInt("id_intervento")); o.setRuolo(rs.getString("ruolo")); list.add(o); }
         } return list;
     }
 
@@ -212,12 +208,12 @@ public class AmministratoreImplementazioneDAO implements DAO {
     // Paziente
     public void inserisciPaziente(Paziente p) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement("INSERT INTO Paziente (cod_fiscale, nome, cognome) VALUES (?, ?, ?)")) {
-            ps.setString(1, p.getCOD_FISCALE()); ps.setString(2, p.getNome()); ps.setString(3, p.getCognome()); ps.executeUpdate();
+            ps.setString(1, p.getCodFiscale()); ps.setString(2, p.getNome()); ps.setString(3, p.getCognome()); ps.executeUpdate();
         }
     }
     public void aggiornaPaziente(Paziente p) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement("UPDATE Paziente SET nome=?, cognome=? WHERE cod_fiscale=?")) {
-            ps.setString(1, p.getNome()); ps.setString(2, p.getCognome()); ps.setString(3, p.getCOD_FISCALE()); ps.executeUpdate();
+            ps.setString(1, p.getNome()); ps.setString(2, p.getCognome()); ps.setString(3, p.getCodFiscale()); ps.executeUpdate();
         }
     }
     public void eliminaPaziente(String cf) throws SQLException {
@@ -266,7 +262,7 @@ public class AmministratoreImplementazioneDAO implements DAO {
         try (PreparedStatement ps = connection.prepareStatement("INSERT INTO Letto (id_stanza) VALUES (?)")) { ps.setInt(1, l.getStanza().getIdStanza()); ps.executeUpdate(); }
     }
     public void aggiornaLetto(Letto l) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("UPDATE Letto SET id_stanza=? WHERE id_letto=?")) { ps.setInt(1, l.getStanza().getIdStanza()); ps.setInt(2, l.getId_letto()); ps.executeUpdate(); }
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE Letto SET id_stanza=? WHERE id_letto=?")) { ps.setInt(1, l.getStanza().getIdStanza()); ps.setInt(2, l.getIdLetto()); ps.executeUpdate(); }
     }
     public void eliminaLetto(int id) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM Letto WHERE id_letto=?")) { ps.setInt(1, id); ps.executeUpdate(); }
