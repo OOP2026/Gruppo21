@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class connection {
+
+    private connection() {}
+
     public static Connection connect() {
         Connection connection = null;
 
