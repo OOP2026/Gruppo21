@@ -9,7 +9,7 @@ public class ConnessioneDatabase {
     private static ConnessioneDatabase instance;
     private static String URL = "jdbc:postgresql://localhost:5432/ospedale_db";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "Fr4ncy_Napoli";
+    private static final String PASSWORD = "25aprogrammazione";
     private String driver = "org.postgresql.Driver";
 
     public Connection connection = null;
