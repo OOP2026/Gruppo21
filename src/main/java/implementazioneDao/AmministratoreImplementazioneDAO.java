@@ -13,353 +13,302 @@ import java.util.List;
 public class AmministratoreImplementazioneDAO implements DAO {
     private final Connection connection;
 
-    public AmministratoreImplementazioneDAO() throws SQLException {
+    // --- MEMORIA LOCALE ---
+    private List<Amministratore> amministratoriCache = new ArrayList<>();
+    private List<Reparto> repartiCache = new ArrayList<>();
+    private List<Paziente> pazientiCache = new ArrayList<>();
+    private List<Medico> mediciCache = new ArrayList<>();
+    private List<TurnoLavorativo> turniCache = new ArrayList<>();
+    private List<Stanza> stanzeCache = new ArrayList<>();
+    private List<Letto> lettiCache = new ArrayList<>();
+    private List<Ricovero> ricoveriCache = new ArrayList<>();
+    private List<Visita> visiteCache = new ArrayList<>();
+
+    public AmministratoreImplementazioneDAO() {
         connection = ConnessioneDatabase.getConnection();
+    }
+
+    @Override
+    public void istanziaMemoriaLocale(int id) throws SQLException {
+        System.out.println("Amministratore: Inizio sincronizzazione memoria locale...");
+
+        // Svuotamento e riempimento forzato a cascata
+        this.repartiCache = fetchRepartiComplessi();
+        this.pazientiCache = fetchPazientiComplessi();
+        this.mediciCache = fetchMediciComplessi();
+
+        // Popolamento liste globali piatte
+        this.amministratoriCache = fetchAmministratoriGlobali();
+        this.turniCache = fetchTurniGlobali();
+        this.stanzeCache = fetchStanzeGlobali();
+        this.lettiCache = fetchLettiGlobali();
+        this.ricoveriCache = fetchRicoveriGlobali();
+        this.visiteCache = fetchVisiteGlobali();
+
+        System.out.println("Amministratore: Inizializzazione dati globali completata.");
     }
 
     @Override
     public Boolean verificaCredenziali(String email, String password) throws SQLException {
         String sql = "SELECT 1 FROM Amministratore WHERE email = ? AND password = ?";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, password);
-            rs = ps.executeQuery();
-            return rs.next();
-        } finally {
-            if (rs != null) {
-                try { rs.close(); } catch (SQLException e) { System.err.println(e.getMessage()); }
-            }
-            if (ps != null) {
-                try { ps.close(); } catch (SQLException e) { System.err.println(e.getMessage()); }
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
             }
         }
     }
 
-    public List<Amministratore> getTuttiGliAmministratori() throws SQLException {
-        List<Amministratore> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Amministratore";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+    // =====================================================================
+    // LOGICA DI RIEMPIMENTO FORZATO (EAGER LOADING TRAMITE FK)
+    // =====================================================================
 
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                try {
-                    Amministratore a = new Amministratore(
-                            rs.getString("nome"),
-                            rs.getString("cognome"),
-                            rs.getString("email"),
-                            rs.getString("password")
-                    );
-                    a.setId(rs.getInt("id_amministratore"));
-                    lista.add(a);
-                } catch (BadArgsException e) {
-                    System.err.println("Errore caricamento Amministratore: " + e.getMessage());
-                }
-            }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
-        }
-        return lista;
-    }
-
-    public List<Reparto> getTuttiIReparti() throws SQLException {
+    private List<Reparto> fetchRepartiComplessi() throws SQLException {
         List<Reparto> lista = new ArrayList<>();
         String sql = "SELECT * FROM Reparto";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
                     Reparto r = new Reparto(rs.getString("nome_reparto"), rs.getInt("id_reparto"));
+                    r.setStanze(fetchStanzePerRepartoFK(r.getId()));
+                    r.setMedici(fetchMediciPerRepartoFK(r.getId()));
                     lista.add(r);
-                } catch (Exception e) {
-                    System.err.println("Errore caricamento Reparto: " + e.getMessage());
+                } catch (BadArgsException e) {
+                    System.err.println("Errore Reparto: " + e.getMessage());
                 }
             }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
         }
         return lista;
     }
 
-    public List<Paziente> getTuttiIPazienti() throws SQLException {
+    private List<Paziente> fetchPazientiComplessi() throws SQLException {
         List<Paziente> lista = new ArrayList<>();
         String sql = "SELECT * FROM Paziente";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    Paziente p = new Paziente(
-                            rs.getString("nome"),
-                            rs.getString("cognome"),
-                            rs.getString("cod_fiscale")
-                    );
+                    Paziente p = new Paziente(rs.getString("nome"), rs.getString("cognome"), rs.getString("cod_fiscale"));
+                    p.setRicoveri(fetchRicoveriPerPazienteFK(p.getCOD_FISCALE()));
                     lista.add(p);
                 } catch (BadArgsException e) {
-                    System.err.println("Errore caricamento Paziente: " + e.getMessage());
+                    System.err.println("Errore Paziente: " + e.getMessage());
                 }
             }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
         }
         return lista;
     }
 
-    public List<Medico> getTuttiIMedici() throws SQLException {
+    private List<Medico> fetchMediciComplessi() throws SQLException {
         List<Medico> lista = new ArrayList<>();
         String sql = "SELECT * FROM Medico";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    // Utilizziamo il costruttore "Guscio" per evitare BadArgsException passando oggetti null
                     Medico m = new Medico(rs.getInt("id_medico"));
-
-                    // Se hai i setter per gli attributi anagrafici, impostali qui
-                    // m.setNome(rs.getString("nome"));
-                    // m.setCognome(rs.getString("cognome"));
-                    // m.setEmail(rs.getString("email"));
-                    // m.setPassword(rs.getString("password"));
-                    // m.setTipoMedico(rs.getString("tipo_medico"));
-
-                    // Salviamo le Foreign Key come primitivi
-                    // m.setIdReparto(rs.getInt("id_reparto"));
-                    // m.setIdAmministratore(rs.getInt("id_amministratore"));
-
+                    m.setTurniLavorativi(fetchTurniPerMedicoFK(m.getIdMedico()));
                     lista.add(m);
-                } catch (Exception e) {
-                    System.err.println("Errore caricamento Medico: " + e.getMessage());
+                } catch (BadArgsException e) {
+                    System.err.println("Errore Guscio Medico: " + e.getMessage());
                 }
             }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
         }
         return lista;
     }
 
-    public List<Stanza> getTutteLeStanze() throws SQLException {
+    // =====================================================================
+    // SOTTO-QUERY TRAMITE FOREIGN KEY (USATE PER RIEMPIRE GLI ARRAY)
+    // =====================================================================
+
+    private List<Stanza> fetchStanzePerRepartoFK(int idReparto) throws SQLException {
+        List<Stanza> stanze = new ArrayList<>();
+        String sql = "SELECT * FROM Stanza WHERE id_reparto = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idReparto);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    try {
+                        stanze.add(new Stanza(new Reparto(idReparto)));
+                    } catch (BadArgsException e) {
+                        System.err.println("Errore Guscio Stanza: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return stanze;
+    }
+
+    private List<Medico> fetchMediciPerRepartoFK(int idReparto) throws SQLException {
+        List<Medico> medici = new ArrayList<>();
+        String sql = "SELECT * FROM Medico WHERE id_reparto = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idReparto);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    try {
+                        Medico m = new Medico(rs.getInt("id_medico"));
+                        medici.add(m);
+                    } catch (BadArgsException e) {
+                        System.err.println("Errore Guscio Medico in Reparto: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return medici;
+    }
+
+    private List<Ricovero> fetchRicoveriPerPazienteFK(String codFiscale) throws SQLException {
+        List<Ricovero> ricoveri = new ArrayList<>();
+        String sql = "SELECT * FROM Ricovero WHERE cod_fiscale_paziente = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, codFiscale);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    try {
+                        ricoveri.add(new Ricovero(rs.getInt("id_ricovero")));
+                    } catch (Exception e) {
+                        System.err.println("Errore Guscio Ricovero in Paziente: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return ricoveri;
+    }
+
+    private List<TurnoLavorativo> fetchTurniPerMedicoFK(int idMedico) throws SQLException {
+        List<TurnoLavorativo> turni = new ArrayList<>();
+        String sql = "SELECT * FROM Turno_Lavorativo WHERE id_medico = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idMedico);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    try {
+                        turni.add(new TurnoLavorativo(
+                                rs.getObject("data_ora_inizio", LocalDateTime.class),
+                                rs.getObject("data_ora_fine", LocalDateTime.class)
+                        ));
+                    } catch (BadArgsException e) {
+                        System.err.println("Errore Turno: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return turni;
+    }
+
+    // =====================================================================
+    // METODI PER CARICAMENTI GLOBALI (SENZA FK SPECIFICA)
+    // =====================================================================
+
+    private List<Amministratore> fetchAmministratoriGlobali() throws SQLException {
+        List<Amministratore> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Amministratore";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    Amministratore a = new Amministratore(rs.getString("nome"), rs.getString("cognome"), rs.getString("email"), rs.getString("password"));
+                    a.setId(rs.getInt("id_amministratore"));
+                    lista.add(a);
+                } catch (BadArgsException e) {
+                    System.err.println("Errore Amministratore: " + e.getMessage());
+                }
+            }
+        }
+        return lista;
+    }
+
+    private List<Stanza> fetchStanzeGlobali() throws SQLException {
         List<Stanza> lista = new ArrayList<>();
         String sql = "SELECT * FROM Stanza";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    // Presuppone l'esistenza di un costruttore vuoto o guscio in Stanza
-                    // Stanza s = new Stanza();
-                    // s.setIdStanza(rs.getInt("id_stanza"));
-                    // s.setIdReparto(rs.getInt("id_reparto")); // FK
-                    // lista.add(s);
-                } catch (Exception e) {
-                    System.err.println("Errore caricamento Stanza: " + e.getMessage());
-                }
-            }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
-        }
-        return lista;
-    }
-
-    public List<Letto> getTuttiILetti() throws SQLException {
-        List<Letto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Letto";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                try {
-                    // Presuppone l'esistenza di un costruttore guscio
-                    // Letto l = new Letto();
-                    // l.setIdLetto(rs.getInt("id_letto"));
-                    // l.setCodiceLetto(rs.getString("cod_letto"));
-                    // l.setIdStanza(rs.getInt("id_stanza")); // FK
-                    // lista.add(l);
-                } catch (Exception e) {
-                    System.err.println("Errore caricamento Letto: " + e.getMessage());
-                }
-            }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
-        }
-        return lista;
-    }
-
-    public List<TurnoLavorativo> getTuttiITurniLavorativi() throws SQLException {
-        List<TurnoLavorativo> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Turno_Lavorativo";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                try {
-                    TurnoLavorativo t = new TurnoLavorativo(
-                            rs.getObject("data_ora_inizio", LocalDateTime.class),
-                            rs.getObject("data_ora_fine", LocalDateTime.class)
-                    );
-                    t.setIdTurno(rs.getInt("id_turno"));
-                    t.setIdMedico(rs.getInt("id_medico")); // FK (Come da Opzione 1 scelta)
-                    lista.add(t);
+                    lista.add(new Stanza(new Reparto(rs.getInt("id_reparto"))));
                 } catch (BadArgsException e) {
-                    System.err.println("Errore caricamento Turno: " + e.getMessage());
+                    System.err.println("Errore Stanza Globale: " + e.getMessage());
                 }
             }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
         }
         return lista;
     }
 
-    public List<Ricovero> getTuttiIRicoveri() throws SQLException {
+    // FIX WARNING: Rimosso throws SQLException e lista ridondante
+    private List<Letto> fetchLettiGlobali() {
+        /* String sql = "SELECT * FROM Letto";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    lista.add(new Letto(rs.getString("cod_letto")));
+                } catch (Exception e) {}
+            }
+        } */
+        return new ArrayList<>();
+    }
+
+    private List<Ricovero> fetchRicoveriGlobali() throws SQLException {
         List<Ricovero> lista = new ArrayList<>();
         String sql = "SELECT * FROM Ricovero";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    // Costruttore guscio
-                    Ricovero r = new Ricovero(rs.getInt("id_ricovero"));
-
-                    // Aggiungi i setter nel Model se non presenti
-                    // r.setDataOraInizio(rs.getObject("data_ora_inizio", LocalDateTime.class));
-                    // r.setDataOraFine(rs.getObject("data_ora_fine", LocalDateTime.class));
-                    // r.setCodFiscalePaziente(rs.getString("cod_fiscale_paziente")); // FK
-                    // r.setIdLetto(rs.getInt("id_letto")); // FK
-
-                    lista.add(r);
+                    lista.add(new Ricovero(rs.getInt("id_ricovero")));
                 } catch (Exception e) {
-                    System.err.println("Errore caricamento Ricovero: " + e.getMessage());
+                    System.err.println("Errore Ricovero Globale: " + e.getMessage());
                 }
             }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
         }
         return lista;
     }
 
-    public List<Visita> getTutteLeVisite() throws SQLException {
-        List<Visita> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Visita";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+    // FIX WARNING: Rimosso throws SQLException e lista ridondante
+    private List<Visita> fetchVisiteGlobali() {
+        /* String sql = "SELECT * FROM Visita";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 try {
-                    // Assicurati di avere il costruttore vuoto o appropriato
-                    // Visita v = new Visita(rs.getString("nome_visita"));
-                    // v.setIdVisita(rs.getInt("id_visita"));
-                    // v.setIdRicovero(rs.getInt("id_ricovero")); // FK
-                    // v.setIdMedico(rs.getInt("id_medico")); // FK
-                    // lista.add(v);
-                } catch (Exception e) {
-                    System.err.println("Errore caricamento Visita: " + e.getMessage());
+                    lista.add(new Visita(rs.getString("nome_visita")));
+                } catch (BadArgsException e) {}
+            }
+        } */
+        return new ArrayList<>();
+    }
+
+    private List<TurnoLavorativo> fetchTurniGlobali() throws SQLException {
+        List<TurnoLavorativo> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Turno_Lavorativo";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    lista.add(new TurnoLavorativo(rs.getObject("data_ora_inizio", LocalDateTime.class), rs.getObject("data_ora_fine", LocalDateTime.class)));
+                } catch (BadArgsException e) {
+                    System.err.println("Errore Turno Globale: " + e.getMessage());
                 }
             }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
         }
         return lista;
     }
 
-    public List<InterventoChirurgico> getTuttiGliInterventiChirurgici() throws SQLException {
-        List<InterventoChirurgico> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Intervento_Chirurgico";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+    // =====================================================================
+    // GETTER DELL'INTERFACCIA DAO E LOCALI (RESTITUISCONO LA CACHE)
+    // =====================================================================
 
-        try {
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                try {
-                    // Assicurati di avere il costruttore vuoto o appropriato
-                    // InterventoChirurgico i = new InterventoChirurgico(rs.getString("nome_intervento"));
-                    // i.setIdIntervento(rs.getInt("id_intervento"));
-                    // i.setRuolo(rs.getString("ruolo"));
-                    // i.setIdRicovero(rs.getInt("id_ricovero")); // FK
-                    // i.setIdMedico(rs.getInt("id_medico")); // FK
-                    // lista.add(i);
-                } catch (Exception e) {
-                    System.err.println("Errore caricamento Intervento: " + e.getMessage());
-                }
-            }
-        } finally {
-            if (rs != null) { try { rs.close(); } catch (SQLException e) {} }
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
+    @Override public List<Medico> getMedici(int id) { return this.mediciCache; }
+    @Override public List<Amministratore> getAmministratori(int id) { return this.amministratoriCache; }
+    @Override public List<Letto> getLetti(int id) { return this.lettiCache; }
+    @Override public List<Stanza> getStanze(int id) { return this.stanzeCache; }
+
+    @Override public List<Stanza> getStanzePerReparto(int id, Reparto reparto) {
+        List<Stanza> stanzeReparto = new ArrayList<>();
+        for (Reparto r : repartiCache) {
+            if (r.getId() == reparto.getId()) return r.getStanze();
         }
-        return lista;
+        return stanzeReparto;
     }
 
-    @Override
-    public void istanziaMemoriaLocale(int id) throws SQLException {
-        System.out.println("Amministratore: inizializzazione dati completata.");
-    }
+    @Override public List<Paziente> getPazienti(int id) { return this.pazientiCache; }
+    @Override public List<TurnoLavorativo> getTurniLavorativi(int id) { return this.turniCache; }
+    @Override public List<Reparto> getReparti(int id) { return this.repartiCache; }
+    @Override public List<Visita> getVisite(int id) { return this.visiteCache; }
 
-    @Override
-    public List<Medico> getMedici(int id) throws SQLException { return getTuttiIMedici(); }
-
-    @Override
-    public List<Amministratore> getAmministratori(int id) throws SQLException { return getTuttiGliAmministratori(); }
-
-    @Override
-    public List<Letto> getLetti(int id) throws SQLException { return getTuttiILetti(); }
-
-    @Override
-    public List<Stanza> getStanze(int id) throws SQLException { return getTutteLeStanze(); }
-
-    @Override
-    public List<Stanza> getStanzePerReparto(int id, Reparto reparto) throws SQLException { return new ArrayList<>(); }
-
-    @Override
-    public List<Paziente> getPazienti(int id) throws SQLException { return getTuttiIPazienti(); }
-
-    @Override
-    public List<TurnoLavorativo> getTurniLavorativi(int id) throws SQLException { return getTuttiITurniLavorativi(); }
-
-    @Override
-    public List<Reparto> getReparti(int id) throws SQLException, BadArgsException { return getTuttiIReparti(); }
-
-    @Override
-    public List<Visita> getVisite(int id) throws SQLException { return getTutteLeVisite(); }
+    public List<Ricovero> getRicoveri(int id) { return this.ricoveriCache; }
 }

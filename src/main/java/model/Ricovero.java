@@ -55,24 +55,49 @@ public class Ricovero {
         return dataOraInizio;
     }
 
+    public void setDataOraInizio(LocalDateTime dataOraInizio) {
+        this.dataOraInizio = dataOraInizio;
+    }
+
     public LocalDateTime getDataOraFine() {
         return dataOraFine;
+    }
+
+    public void setDataOraFine(LocalDateTime dataOraFine) {
+        this.dataOraFine = dataOraFine;
     }
 
     public Paziente getPaziente() {
         return paziente;
     }
 
+    public void setPaziente(Paziente paziente) {
+        this.paziente = paziente;
+    }
+
     public Letto getLetto() {
         return letto;
+    }
+
+    public void setLetto(Letto letto) {
+        this.letto = letto;
     }
 
     public List<Medico> getMedici() {
         return medici;
     }
 
+    // Metodo fondamentale per il DAO per il riempimento forzato dell'array
+    public void setMedici(List<Medico> medici) {
+        this.medici = medici;
+    }
+
     @Override
     public String toString() {
-        return "Ricovero di " + paziente + " nel " + letto;
+        // Controllo di sicurezza per evitare errori se l'oggetto è un guscio vuoto
+        if (paziente != null && letto != null) {
+            return "Ricovero di " + paziente.getNome() + " " + paziente.getCognome() + " nel letto " + letto;
+        }
+        return "Ricovero ID: " + idRicovero;
     }
 }
