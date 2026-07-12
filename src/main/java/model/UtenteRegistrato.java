@@ -11,7 +11,6 @@ public class UtenteRegistrato {
 
     public UtenteRegistrato(String nome, String cognome, String email, String password) throws BadArgsException {
         if(email == null || password == null) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi nulli.");
-        if(email.isEmpty() || password.isEmpty()) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi vuoti.");
 
         this.nome = nome;
         this.cognome = cognome;
@@ -54,4 +53,9 @@ public class UtenteRegistrato {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
 }

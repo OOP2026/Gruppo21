@@ -64,9 +64,13 @@ public class MedicoImplementazioneDAO implements DAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     try {
-                        lista.add(new Visita(rs.getString("nome_visita"),
-                                new Ricovero(rs.getInt("id_ricovero")),
-                                new Medico(idMedico)));
+
+                        Ricovero ricoveroGuscio = new Ricovero(rs.getInt("id_ricovero"));
+                        Medico medicoGuscio = new Medico(idMedico);
+
+                        Visita v = new Visita(rs.getString("nome_visita"), ricoveroGuscio, medicoGuscio);
+                        v.setIdVisita(rs.getInt("id_visita"));
+                        lista.add(v);
                     } catch (BadArgsException e) { System.err.println(e.getMessage()); }
                 }
             }
@@ -87,10 +91,35 @@ public class MedicoImplementazioneDAO implements DAO {
                                 rs.getObject("data_ora_inizio", LocalDateTime.class),
                                 rs.getObject("data_ora_fine", LocalDateTime.class)
                         );
+                        t.setIdTurno(rs.getInt("id_turno"));
                         t.setMedico(new Medico(idMedico));
                         lista.add(t);
                     } catch (BadArgsException e) { System.err.println(e.getMessage()); }
                 }
+            }
+        }
+        return lista;
+    }
+
+    @Override
+    public List<InterventoChirurgico> getInterventi(int id) throws SQLException {
+        List<InterventoChirurgico> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM Intervento_Chirurgico";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    Visita v = new Visita(rs.getInt("id_visita"));
+
+                    InterventoChirurgico i = new InterventoChirurgico(
+                            rs.getString("nome_intervento"),
+                            rs.getObject("data_ora_inizio", LocalDateTime.class),
+                            rs.getObject("data_ora_fine", LocalDateTime.class),
+                            v
+                    );
+                    i.setIdIntervento(rs.getInt("id_intervento"));
+                    lista.add(i);
+                } catch (Exception e) { System.err.println("Errore Intervento: " + e.getMessage()); }
             }
         }
         return lista;
@@ -114,12 +143,12 @@ public class MedicoImplementazioneDAO implements DAO {
     @Override
     public List<Opera> getCollegamentiOpera() throws SQLException {
         List<Opera> collegamenti = new ArrayList<>();
-        String sql = "SELECT id_medico, id_interventi, ruolo FROM Opera";
+        String sql = "SELECT id_medico, id_intervento, ruolo FROM Opera";
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Opera opera = new Opera();
                 opera.setId_medico(rs.getInt("id_medico"));
-                opera.setId_intervento(rs.getInt("id_interventi"));
+                opera.setId_intervento(rs.getInt("id_intervento"));
                 opera.setRuolo(rs.getString("ruolo"));
                 collegamenti.add(opera);
             }
@@ -127,12 +156,35 @@ public class MedicoImplementazioneDAO implements DAO {
         return collegamenti;
     }
 
-    // Il medico di base non legge dati globali o amministrativi non di sua competenza
-    @Override public List<Reparto> getReparti(int id) { return new ArrayList<>(); }
+    public int recuperaIdMedico(String email, String password) throws SQLException {
+        String sql = "SELECT id_medico FROM Medico WHERE email = ? AND password = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, password);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt("id_medico");
+            }
+        }
+        return -1;
+    }
+
+
+    @Override
+    public List<Reparto> getReparti(int id) throws SQLException {
+        List<Reparto> lista = new ArrayList<>();
+        String sql = "SELECT * FROM Reparto";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    lista.add(new Reparto(rs.getString("nome_reparto"), rs.getInt("id_reparto")));
+                } catch (Exception e) {}
+            }
+        }
+        return lista;
+    }
     @Override public List<Paziente> getPazienti(int id) { return new ArrayList<>(); }
     @Override public List<Stanza> getStanze(int id) { return new ArrayList<>(); }
     @Override public List<Ricovero> getRicoveri(int id) { return new ArrayList<>(); }
-    @Override public List<InterventoChirurgico> getInterventi(int id) { return new ArrayList<>(); }
     @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
     @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
     @Override public List<Stanza> getStanzePerReparto(int id, Reparto r) { return new ArrayList<>(); }

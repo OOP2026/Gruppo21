@@ -3,30 +3,46 @@ package model;
 import exceptions.BadArgsException;
 
 public class Visita {
+    private int idVisita;
     private String nomeVisita;
-    // Aggiunte le Foreign Key per mappare il DB
+
+    // Foreign Keys mappate ad Oggetti
     private Ricovero ricovero;
     private Medico medico;
 
-    public Visita(String nomeVisita) throws BadArgsException {
-        if(nomeVisita==null) throw new BadArgsException("La classe Visita ha degli attributi NULLI.");
-        if(nomeVisita.isEmpty()) throw new BadArgsException("La classe Visita ha degli attributi VUOTI.");
-        this.nomeVisita = nomeVisita;
+
+    public Visita(int idVisita) {
+        this.idVisita = idVisita;
     }
 
-    // Costruttore completo per il DAO (con FK)
+
     public Visita(String nomeVisita, Ricovero ricovero, Medico medico) throws BadArgsException {
-        this(nomeVisita);
+        if (nomeVisita == null || ricovero == null || medico == null) {
+            throw new BadArgsException("La classe Visita ha degli attributi NULLI.");
+        }
+        if (nomeVisita.isEmpty()) {
+            throw new BadArgsException("La classe Visita ha degli attributi VUOTI.");
+        }
+        this.nomeVisita = nomeVisita;
         this.ricovero = ricovero;
         this.medico = medico;
     }
 
+    public int getIdVisita() { return idVisita; }
+    public void setIdVisita(int idVisita) { this.idVisita = idVisita; }
+
     public String getNomeVisita() { return nomeVisita; }
+    public void setNomeVisita(String nomeVisita) { this.nomeVisita = nomeVisita; }
+
     public Ricovero getRicovero() { return ricovero; }
+    public void setRicovero(Ricovero ricovero) { this.ricovero = ricovero; }
+
     public Medico getMedico() { return medico; }
+    public void setMedico(Medico medico) { this.medico = medico; }
 
     @Override
     public String toString() {
-        return "Visita: " + nomeVisita;
+        String pNome = (ricovero != null && ricovero.getPaziente() != null) ? ricovero.getPaziente().getCOD_FISCALE() : "Sconosciuto";
+        return idVisita + " - " + nomeVisita + " (Paziente: " + pNome + ")";
     }
 }

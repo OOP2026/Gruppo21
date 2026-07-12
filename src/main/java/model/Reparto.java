@@ -11,14 +11,14 @@ public class Reparto {
     private String nome;
     private int id;
 
-    // Costruttore Guscio per la Foreign Key (usato dal DAO)
+
     public Reparto(int id) {
         this.id = id;
         this.stanze = new ArrayList<>();
         this.medici = new ArrayList<>();
     }
 
-    // Costruttore completo
+
     public Reparto(String nome, int id) throws BadArgsException {
         if(nome == null) throw new BadArgsException("La classe Reparto ha degli attributi nulli.");
         if(nome.isEmpty()) throw new BadArgsException("La classe Reparto ha degli attributi vuoti.");

@@ -58,4 +58,13 @@ public class Stanza {
     public List<Letto> getLetti() {
         return letti;
     }
+
+    @Override
+    public String toString() {
+        if (reparto != null) {
+            return "Stanza " + idStanza + " - " + reparto.getNome();
+        }
+        return "Stanza " + idStanza;
+    }
+
 }

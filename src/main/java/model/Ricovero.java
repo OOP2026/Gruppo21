@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Ricovero {
 
-    private int idRicovero; // Aggiunto per mappare la Primary Key del DB
+    private int idRicovero;
     private LocalDateTime dataOraInizio;
     private LocalDateTime dataOraFine;
     private Paziente paziente;
@@ -86,7 +86,7 @@ public class Ricovero {
         return medici;
     }
 
-    // Metodo fondamentale per il DAO per il riempimento forzato dell'array
+
     public void setMedici(List<Medico> medici) {
         this.medici = medici;
     }
