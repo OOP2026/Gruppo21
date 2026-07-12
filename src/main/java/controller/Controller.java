@@ -54,136 +54,34 @@ public class Controller {
     }
 
     private void scaricaTabelleAmministratore(AmministratoreImplementazioneDAO dao) throws SQLException {
+        // 1. IL DAO FA TUTTO IL LAVORO PESANTE (Scarica e incastra gli oggetti tramite FK)
+        dao.istanziaMemoriaLocale(0);
 
-        this.reparti = dao.getTuttiIReparti();
-        this.stanze = dao.getTutteLeStanze();
-        this.letti = dao.getTuttiILetti();
-        this.pazienti = dao.getTuttiIPazienti();
-        this.medici = dao.getTuttiIMedici();
-        this.ricoveri = dao.getTuttiIRicoveri();
-        this.turni = dao.getTuttiITurniLavorativi();
-        this.visite = dao.getTutteLeVisite();
-        this.interventi = dao.getTuttiGliInterventiChirurgici();
+        // 2. IL CONTROLLER SI LIMITA A RITIRARE LE LISTE GIÀ PRONTE E ASSEMBLATE
+        this.reparti = dao.getReparti(0);
+        this.stanze = dao.getStanze(0);
+        this.letti = dao.getLetti(0);
+        this.pazienti = dao.getPazienti(0);
+        this.medici = dao.getMedici(0);
+        this.ricoveri = dao.getRicoveri(0);
+        this.turni = dao.getTurniLavorativi(0);
+        this.visite = dao.getVisite(0);
 
-        for (Stanza s : stanze) {
-            Reparto r = trovaRepartoPerId(s.getIdReparto());
-            if (r != null) {
-                s.setReparto(r);
-                r.aggiungiStanza(s);
-            }
-        }
+        // this.interventi = dao.getInterventi(0); // Decommenta quando implementerai gli Interventi nel DAO
 
-        for (Letto l : letti) {
-            Stanza s = trovaStanzaPerId(l.getIdStanza());
-            if (s != null) {
-                l.setStanza(s);
-                s.aggiungiLetto(l);
-            }
-        }
-
-        for (Medico m : medici) {
-            Reparto r = trovaRepartoPerId(m.getIdReparto());
-            if (r != null) {
-                r.aggiungiMedico(m);
-            }
-        }
-
-        for (Ricovero ric : ricoveri) {
-            Paziente p = trovaPazientePerCodFiscale(ric.getCodFiscalePaziente());
-            Letto l = trovaLettoPerId(ric.getIdLetto());
-
-            if (p != null) {
-                p.aggiungiRicovero(ric);
-            }
-            if (l != null) {
-                l.aggiungiRicovero(ric);
-            }
-        }
-
-        for (Visita v : visite) {
-            Ricovero ric = trovaRicoveroPerId(v.getIdRicovero());
-            Medico m = trovaMedicoPerId(v.getIdMedico());
-
-            if (ric != null) {
-                // v.setRicovero(ric); // Decommenta se hai aggiunto setRicovero() nel Model
-            }
-            if (m != null) {
-                // v.setMedico(m); // Decommenta se hai aggiunto setMedico() nel Model
-            }
-        }
-
-        for (TurnoLavorativo t : turni) {
-            Medico m = trovaMedicoPerId(t.getIdMedico());
-            if (m != null) {
-                t.aggiungiMedico(m);
-            }
-        }
-
-        for (InterventoChirurgico i : interventi) {
-            Ricovero ric = trovaRicoveroPerId(i.getIdRicovero());
-            Medico m = trovaMedicoPerId(i.getIdMedico());
-        }
-
-        System.out.println("Memoria allocata e interconnessa con successo (senza HashMap).");
+        System.out.println("Memoria Controller allocata con le liste già interconnesse dal DAO!");
     }
 
-    private Reparto trovaRepartoPerId(int id) {
-        for (Reparto r : reparti) {
-            if (r.getId() == id) {
-                return r;
-            }
-        }
-        return null;
-    }
-
-    private Stanza trovaStanzaPerId(int id) {
-        for (Stanza s : stanze) {
-            // Assicurati di avere getIdStanza() in Stanza
-            // Sostituisci il metodo in base a come lo hai chiamato
-            // if (s.getIdStanza() == id) return s;
-        }
-        return null; // Aggiusta la logica dopo aver inserito l'ID Stanza
-    }
-
-    private Letto trovaLettoPerId(int id) {
-        for (Letto l : letti) {
-            // Sostituisci con il getter corretto dell'ID numerico
-            // if (l.getIdLetto() == id) return l;
-        }
-        return null; // Aggiusta la logica dopo aver inserito l'ID Letto
-    }
-
-    private Medico trovaMedicoPerId(int id) {
-        for (Medico m : medici) {
-            if (m.getIdMedico() == id) {
-                return m;
-            }
-        }
-        return null;
-    }
-
-    private Paziente trovaPazientePerCodFiscale(String cf) {
-        for (Paziente p : pazienti) {
-            if (p.getCOD_FISCALE().equals(cf)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    private Ricovero trovaRicoveroPerId(int id) {
-        for (Ricovero r : ricoveri) {
-            if (r.getIdRicovero() == id) {
-                return r;
-            }
-        }
-        return null;
-    }
+    // =========================================================================
+    // I vecchi metodi "trovaPerId" e i cicli "for" sono stati rimossi perché
+    // adesso l'assemblaggio degli array interni avviene in automatico nel DAO!
+    // =========================================================================
 
     public boolean isAmministratore() {
         return "Amministratore".equals(utenteLoggatoRuolo);
     }
 
+    // --- GETTER PER L'INTERFACCIA GRAFICA ---
     public List<Reparto> getReparti() { return reparti; }
     public List<Paziente> getPazienti() { return pazienti; }
     public List<Medico> getMedici() { return medici; }
@@ -191,4 +89,6 @@ public class Controller {
     public List<Letto> getLetti() { return letti; }
     public List<Ricovero> getRicoveri() { return ricoveri; }
     public List<TurnoLavorativo> getTurni() { return turni; }
+    public List<Visita> getVisite() { return visite; }
+    public List<InterventoChirurgico> getInterventi() { return interventi; }
 }
