@@ -1,7 +1,7 @@
 package implementazione_dao;
 
 import dao.DAO;
-import database_connection.ConnessioneDatabase;
+import database_conn.ConnessioneDatabase;
 import model.*;
 
 import java.sql.*;
@@ -207,10 +207,6 @@ public class AmministratoreImplementazioneDAO implements DAO {
             while (rs.next()) { Opera o = new Opera(); o.setIdMedico(rs.getInt(ID_MEDICO_DB)); o.setIdIntervento(rs.getInt("id_intervento")); o.setRuolo(rs.getString("ruolo")); list.add(o); }
         } return list;
     }
-
-    @Override public List<Stanza> getStanzePerReparto(int id, Reparto r) { return new ArrayList<>(); }
-
-
 
     // Paziente
     public void inserisciPaziente(Paziente p) throws SQLException {

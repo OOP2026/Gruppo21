@@ -1,7 +1,5 @@
 package model;
 
-import exceptions.BadArgsException;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,29 +18,8 @@ public class Ricovero {
         this.medici = new ArrayList<>();
     }
 
-    public Ricovero(Paziente paziente, Letto letto, LocalDateTime dataOraInizio, LocalDateTime dataOraFine) throws BadArgsException {
-        if(paziente==null || letto == null || dataOraInizio == null || dataOraFine == null) throw new BadArgsException("La classe Ricovero ha degli attributi NULLI.");
-
-        this.paziente = paziente;
-        this.letto = letto;
-        this.dataOraInizio = dataOraInizio;
-        this.dataOraFine = dataOraFine;
-        this.medici = new ArrayList<>();
-
-        paziente.aggiungiRicovero(this);
-        letto.aggiungiRicovero(this);
-    }
-
     public int getIdRicovero() {
         return idRicovero;
-    }
-
-    public void setIdRicovero(int idRicovero) {
-        this.idRicovero = idRicovero;
-    }
-
-    public Ricovero richiedereRicovero() {
-        return this;
     }
 
     public void aggiungiMedico(Medico medico) throws RuntimeException {
@@ -82,18 +59,8 @@ public class Ricovero {
         this.letto = letto;
     }
 
-    public List<Medico> getMedici() {
-        return medici;
-    }
-
-
-    public void setMedici(List<Medico> medici) {
-        this.medici = medici;
-    }
-
     @Override
     public String toString() {
-        // Controllo di sicurezza per evitare errori se l'oggetto è un guscio vuoto
         if (paziente != null && letto != null) {
             return "Ricovero di " + paziente.getNome() + " " + paziente.getCognome() + " nel letto " + letto;
         }

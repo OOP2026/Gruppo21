@@ -11,7 +11,6 @@ public class UtenteRegistrato {
 
     public UtenteRegistrato(String nome, String cognome, String email, String password) throws BadArgsException {
         if(email == null || password == null) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi nulli.");
-
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
@@ -22,40 +21,19 @@ public class UtenteRegistrato {
         return nome;
     }
 
-    public String getCognome() {
-        return cognome;
-    }
-
-    public UtenteRegistrato(String email, String password) throws BadArgsException {
-        if(email == null || password == null) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi nulli.");
-        if(email.isEmpty() || password.isEmpty()) throw new BadArgsException("La classe UtenteRegistrato ha degli attributi vuoti.");
-
-        this.email = email;
-        this.password = password;
-    }
-
-    public boolean login(String email, String password) {
-        return this.email.equals(email) && this.password.equals(password);
-    }
-
-    private void logout() {
-        System.out.println("Logout effettuato");
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getPassword() {
-        return password;
+    public String getEmail() {
+        return email;
     }
 
+    public String getCognome() {
+        return cognome;
+    }
 }

@@ -37,32 +37,12 @@ public class Paziente {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getCognome() {
         return cognome;
     }
 
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
     public String getCodFiscale() {
         return codFiscale;
-    }
-
-    public void setCodFiscale(String codFiscale) {
-        this.codFiscale = codFiscale;
-    }
-
-    public List<Ricovero> getRicoveri() {
-        return ricoveri;
-    }
-
-    public void setRicoveri(List<Ricovero> ricoveri) {
-        this.ricoveri = ricoveri;
     }
 
     @Override

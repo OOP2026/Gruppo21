@@ -6,7 +6,6 @@ public class Visita {
     private int idVisita;
     private String nomeVisita;
 
-    // Foreign Keys mappate ad Oggetti
     private Ricovero ricovero;
     private Medico medico;
 
@@ -32,7 +31,6 @@ public class Visita {
     public void setIdVisita(int idVisita) { this.idVisita = idVisita; }
 
     public String getNomeVisita() { return nomeVisita; }
-    public void setNomeVisita(String nomeVisita) { this.nomeVisita = nomeVisita; }
 
     public Ricovero getRicovero() { return ricovero; }
     public void setRicovero(Ricovero ricovero) { this.ricovero = ricovero; }

@@ -38,36 +38,12 @@ public class Reparto {
         medici.add(medico);
     }
 
-    public List<Stanza> getStanze() {
-        return stanze;
-    }
-
-    public void setStanze(List<Stanza> stanze) {
-        this.stanze = stanze;
-    }
-
-    public List<Medico> getMedici() {
-        return medici;
-    }
-
-    public void setMedici(List<Medico> medici) {
-        this.medici = medici;
-    }
-
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     @Override

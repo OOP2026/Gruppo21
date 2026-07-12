@@ -19,13 +19,7 @@ public class InterventoChirurgico {
     private List<Medico> medici;
 
 
-    public InterventoChirurgico(int idIntervento) {
-        this.idIntervento = idIntervento;
-        this.medici = new ArrayList<>();
-    }
-
-
-    public InterventoChirurgico(String nomeIntervento, LocalDateTime dataOraInizio, LocalDateTime dataOraFine, Visita visita) throws BadArgsException {
+     public InterventoChirurgico(String nomeIntervento, LocalDateTime dataOraInizio, LocalDateTime dataOraFine, Visita visita) throws BadArgsException {
         if(nomeIntervento == null || dataOraInizio == null || dataOraFine == null || visita == null) {
             throw new BadArgsException("La classe InterventoChirurgico ha degli attributi NULLI.");
         }
@@ -51,19 +45,9 @@ public class InterventoChirurgico {
     public void setIdIntervento(int idIntervento) { this.idIntervento = idIntervento; }
 
     public String getNomeIntervento() { return nomeIntervento; }
-    public void setNomeIntervento(String nomeIntervento) { this.nomeIntervento = nomeIntervento; }
-
     public LocalDateTime getDataOraInizio() { return dataOraInizio; }
-    public void setDataOraInizio(LocalDateTime dataOraInizio) { this.dataOraInizio = dataOraInizio; }
-
     public LocalDateTime getDataOraFine() { return dataOraFine; }
-    public void setDataOraFine(LocalDateTime dataOraFine) { this.dataOraFine = dataOraFine; }
-
     public Visita getVisita() { return visita; }
-    public void setVisita(Visita visita) { this.visita = visita; }
-
-    public List<Medico> getMedici() { return medici; }
-    public void setMedici(List<Medico> medici) { this.medici = medici; }
 
     @Override
     public String toString() {

@@ -17,7 +17,6 @@ public interface DAO {
     List<Amministratore> getAmministratori(int id) throws SQLException;
     List<Letto> getLetti(int id) throws SQLException;
     List<Visita> getVisite(int id) throws SQLException;
-    List<Stanza> getStanzePerReparto(int id, Reparto reparto) throws SQLException;
 
     // Metodi per le tabelle ponte N:M
     List<Gestisce> getCollegamentiGestisce() throws SQLException;

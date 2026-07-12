@@ -1,7 +1,7 @@
 package implementazione_dao;
 
 import dao.DAO;
-import database_connection.ConnessioneDatabase;
+import database_conn.ConnessioneDatabase;
 import exceptions.BadArgsException;
 import model.*;
 
@@ -189,5 +189,4 @@ public class MedicoImplementazioneDAO implements DAO {
     @Override public List<Ricovero> getRicoveri(int id) { return new ArrayList<>(); }
     @Override public List<Amministratore> getAmministratori(int id) { return new ArrayList<>(); }
     @Override public List<Letto> getLetti(int id) { return new ArrayList<>(); }
-    @Override public List<Stanza> getStanzePerReparto(int id, Reparto r) { return new ArrayList<>(); }
 }

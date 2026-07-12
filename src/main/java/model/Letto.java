@@ -47,10 +47,6 @@ public class Letto {
 
     public void setStanza(Stanza stanza) { this.stanza = stanza; }
 
-    public List<Ricovero> getRicoveri() {
-        return ricoveri;
-    }
-
     @Override
     public String toString() {
         return "Letto " + idLetto;

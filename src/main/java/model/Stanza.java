@@ -8,7 +8,6 @@ import java.util.List;
 public class Stanza {
 
     private int idStanza;  // Primary Key
-    private int idReparto; // Foreign Key
 
     private Reparto reparto;
     private List<Letto> letti;
@@ -39,24 +38,12 @@ public class Stanza {
         this.idStanza = idStanza;
     }
 
-    public int getIdReparto() {
-        return idReparto;
-    }
-
-    public void setIdReparto(int idReparto) {
-        this.idReparto = idReparto;
-    }
-
     public Reparto getReparto() {
         return reparto;
     }
 
     public void setReparto(Reparto reparto) {
         this.reparto = reparto;
-    }
-
-    public List<Letto> getLetti() {
-        return letti;
     }
 
     @Override

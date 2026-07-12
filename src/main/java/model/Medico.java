@@ -13,7 +13,6 @@ public class Medico extends UtenteRegistrato {
     private List<Ricovero> ricoveri;
     private List<TurnoLavorativo> turniLavorativi;
     private List<InterventoChirurgico> interventi;
-    private Amministratore amministratoreDiRiferimento;
 
     public Medico(int idMedico) throws BadArgsException {
         super("", "", "", "");
@@ -47,7 +46,6 @@ public class Medico extends UtenteRegistrato {
         if(tipoMedico.isEmpty()) throw new BadArgsException("La classe Medico ha degli attributi VUOTI.");
 
         allocateAttribs(tipoMedico, reparto);
-        this.amministratoreDiRiferimento = amministratoreDiRiferimento;
         reparto.aggiungiMedico(this);
     }
 
@@ -67,28 +65,12 @@ public class Medico extends UtenteRegistrato {
         this.idMedico = idMedico;
     }
 
-    public Amministratore getAmministratoreDiRiferimento() {
-        return amministratoreDiRiferimento;
-    }
-
-    public void setAmministratoreDiRiferimento(Amministratore amministratoreDiRiferimento) {
-        this.amministratoreDiRiferimento = amministratoreDiRiferimento;
-    }
-
     public List<TurnoLavorativo> getTurniLavorativi() {
         return turniLavorativi;
     }
 
-    public void setTurniLavorativi(List<TurnoLavorativo> turniLavorativi) {
-        this.turniLavorativi = turniLavorativi;
-    }
-
     public List<Ricovero> getRicoveri() {
         return ricoveri;
-    }
-
-    public void setRicoveri(List<Ricovero> ricoveri) {
-        this.ricoveri = ricoveri;
     }
 
     public Reparto getReparto() {
@@ -103,16 +85,8 @@ public class Medico extends UtenteRegistrato {
         return tipoMedico;
     }
 
-    public void setTipoMedico(String tipoMedico) {
-        this.tipoMedico = tipoMedico;
-    }
-
     public List<InterventoChirurgico> getInterventi() {
         return interventi;
-    }
-
-    public void setInterventi(List<InterventoChirurgico> interventi) {
-        this.interventi = interventi;
     }
 
     public void aggiungiIntervento(InterventoChirurgico intervento) {
